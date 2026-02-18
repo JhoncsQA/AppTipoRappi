@@ -81,4 +81,9 @@ pago - responde - producto y saldo OK
 
 Arquitectura de microservicios.
 
-
+## ¿Cuántos usuarios tendrá el sistema?
+el sistema inicialmente, emepzara con los estudiantes de la universidad.
+## ¿Necesita escalar?
+se necesita escalar
+## ¿Es un sistema pequeño o grande?
+en el momento iniciara grande, pero periodicamente va a ir aumentando la capacidad para manejas mas clientes. 
