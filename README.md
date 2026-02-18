@@ -40,9 +40,24 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
 
 ## EL PROYECTO SE LLAMARA "DOMI'S YA"
 
+
+## 1 ENTENDER EL PROBLEMA
+
 ## ¿Qué problema resuelve el sistema?
 Resuelve el problema de compra y envios de paqueteria local. 
 ## ¿Quién lo usará?
 La usara cualquier tipo de persona, que desee comprar o vender cualquier tipo de producto
 ## ¿Qué pasaría si no existiera?
 Si no existiera las personas seguirian utilizando aplicaciones existentos donde el cobro por envio de productos es muy costoso.
+
+
+## 2 IDENTIFICAR LOS SERVICIOS
+
+## ¿Qué funciones principales tiene el sistema?
+El sistema tiene como principales funciones, filtros personalizados para la busqueda de productos, tarjetas de descuentos, envios gratis, plan padrino(para apadrinar tus familiares.)
+## ¿Qué partes pueden trabajar por separado?
+sistema de pagos, sistema de gps, sistema de manejo de usuarios. 
+## ¿Qué procesos son independientes?
+pasarela de pagos, login, compras, ventas, notificaciones. 
+
+## 3 ¿CÓMO SE COMUNICAN?
