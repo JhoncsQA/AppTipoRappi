@@ -16,7 +16,8 @@ Link Git:
 https://github.com/JhoncsQA/AppTipoRappi.git
 
 ## Problema que resuelve
-    ENTENDER EL PROBLEMA
+
+ENTENDER EL PROBLEMA
 
 1. ¿Qué problema resuelve el sistema?
   El aplicativo nos ayuda a realizar domicilios de manera facil, efectiva y de manera autonoma por medio del telefono movil
@@ -32,17 +33,18 @@ https://github.com/JhoncsQA/AppTipoRappi.git
   el conocimeinto completo del menu y generaria problemas de tiempo y errores de entendimeinto al realizar o tomar una orden
 
 ## Servicios del sistema
-    IDENTIFICAR LOS SERVICIOS
+
+IDENTIFICAR LOS SERVICIOS
 
 ¿Qué funciones principales tiene el sistema?
 
-* Gestión de usuarios
+*Gestión de usuarios
 
   -Registro e inicio de sesión.
 
   -Administración de perfiles (cliente, restaurante, domiciliario, administrador).
 
-* Gestión de restaurantes/comercios
+*Gestión de restaurantes/comercios
 
   -Registro de establecimientos.
 
@@ -50,7 +52,7 @@ https://github.com/JhoncsQA/AppTipoRappi.git
 
   -Actualización de precios y disponibilidad.
 
-* Gestión de pedidos
+*Gestión de pedidos
 
   -Creación de pedidos.
 
@@ -60,7 +62,7 @@ https://github.com/JhoncsQA/AppTipoRappi.git
 
   -Cambio de estado del pedido (pendiente, en preparación, en camino, entregado).
 
-* Asignación de repartidores
+*Asignación de repartidores
 
   -Asignación automática o manual.
 
@@ -68,13 +70,13 @@ https://github.com/JhoncsQA/AppTipoRappi.git
 
   -Confirmación de entrega.
 
-* Seguimiento en tiempo real
+*Seguimiento en tiempo real
 
   -Ubicación del repartidor.
 
   -Actualización del estado del pedido.
 
-* Gestión de pagos
+*Gestión de pagos
 
   -Procesamiento de pagos digitales.
 
@@ -127,21 +129,21 @@ https://github.com/JhoncsQA/AppTipoRappi.git
   *Servicio de Pedidos
 
     Necesita información de:
-
+    
     Servicio de Usuarios (datos del cliente)
-
+    
     Servicio de Catálogo (productos y precios)
-
+    
     Servicio de Pagos (confirmación del pago)
-
+    
     Servicio de Repartidores (asignación y disponibilidad)
 
   *Servicio de Repartidores
 
     Necesita información de:
-
+    
     Servicio de Pedidos (detalle del pedido)
-
+    
     Servicio de Usuarios (dirección del cliente)
 
   *Servicio de Pagos
