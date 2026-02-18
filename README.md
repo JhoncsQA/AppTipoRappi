@@ -3,8 +3,6 @@
 Aplicación tipo **Rappi** para la **gestión de domicilios**, orientada a facilitar el proceso de pedidos, asignación de repartidores y seguimiento de entregas en tiempo real.
 
 
-App Tipo Rappi
-
 Integrantes:
 
 Samir Ausecha - Encargado de documentación
@@ -47,6 +45,6 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
   - Control de pedidos
   - Gestión de usuarios
   - Reportes básicos
-
+Hola mundo
 ---
 
