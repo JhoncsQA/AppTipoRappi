@@ -87,3 +87,13 @@ el sistema inicialmente, emepzara con los estudiantes de la universidad.
 se necesita escalar
 ## ¿Es un sistema pequeño o grande?
 en el momento iniciara grande, pero periodicamente va a ir aumentando la capacidad para manejas mas clientes. 
+
+## 5 BASE DE DATOS
+
+## ¿Qué información debe guardarse?
+Se deben tener varias tablas para el almacenamiento de la informacion, entre ellas usuarios, productos, tiendas, pagos, pedidos. 
+## ¿Qué datos son críticos?
+los datos criticos son, todos los datos personales. 
+## ¿Qué pasaría si se pierden?
+primero se perderia la confianza de los clientes. 
+
