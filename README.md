@@ -38,3 +38,4 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
 
 ---
 
+EL PROYECTO SE LLAMARA "DOMI'S YA"
