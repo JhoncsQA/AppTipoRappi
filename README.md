@@ -38,4 +38,11 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
 
 ---
 
-EL PROYECTO SE LLAMARA "DOMI'S YA"
+## EL PROYECTO SE LLAMARA "DOMI'S YA"
+
+## ¿Qué problema resuelve el sistema?
+Resuelve el problema de compra y envios de paqueteria local. 
+## ¿Quién lo usará?
+La usara cualquier tipo de persona, que desee comprar o vender cualquier tipo de producto
+## ¿Qué pasaría si no existiera?
+Si no existiera las personas seguirian utilizando aplicaciones existentos donde el cobro por envio de productos es muy costoso.
