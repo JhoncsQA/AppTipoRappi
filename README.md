@@ -60,4 +60,22 @@ sistema de pagos, sistema de gps, sistema de manejo de usuarios.
 ## ¿Qué procesos son independientes?
 pasarela de pagos, login, compras, ventas, notificaciones. 
 
+
 ## 3 ¿CÓMO SE COMUNICAN?
+
+## ¿Qué servicio necesita información de otro?
+login 
+## ¿Quién solicita datos?
+login - solicita - datos de usuarios
+## ¿Quién responde?
+login - responde - usuario y contraseña OK
+
+## ¿Qué servicio necesita información de otro?
+Pasarela de pagos 
+## ¿Quién solicita datos?
+pago - solicita - producto y saldo a favor 
+## ¿Quién responde?
+pago - responde - producto y saldo OK
+
+
+
