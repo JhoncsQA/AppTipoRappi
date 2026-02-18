@@ -2,6 +2,18 @@
 
 Aplicación tipo **Rappi** para la **gestión de domicilios**, orientada a facilitar el proceso de pedidos, asignación de repartidores y seguimiento de entregas en tiempo real.
 
+
+App Tipo Rappi
+
+Integrantes:
+
+Samir Ausecha - Encargado de documentación
+Anderson Avendaño - Encargado tecnico
+Nasly de los rios - Encargado de la presentación
+Jhon Cabezas - Lider del proyecto
+
+Link Git:
+https://github.com/JhoncsQA/AppTipoRappi.git
 ---
 
 ## 📱 Descripción general
