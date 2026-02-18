@@ -97,3 +97,7 @@ los datos criticos son, todos los datos personales.
 ## ¿Qué pasaría si se pierden?
 primero se perderia la confianza de los clientes. 
 
+## 6 FALLAS Y RIESGOS
+
+En el sistema podras registrarte tato como vendedor como comprados, ademas de esto tendra un usuario administrador, supervisor y otro de soporte. 
+
