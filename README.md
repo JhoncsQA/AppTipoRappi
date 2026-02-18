@@ -45,6 +45,33 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
   - Control de pedidos
   - Gestión de usuarios
   - Reportes básicos
-Hola mundo
+  - 
+PARTE 1 — ENTENDER EL PROBLEMA:
+
+1. ¿Qué problema resuelve el sistema?
+
+Resuelve el inconveniente de tener que desplazarme a sitios presencialmente, aprovechando el tiempo en otras cosas mientras mis pedidos llegan a mi ubicación.
+
+2. ¿Quién lo usará?
+
+Tanto el usuario que realiza pedidos como el domiciliario que ejecuta las ordenes y las lleva a su destino.
+
+3. ¿Qué pasaría si no existiera?
+
+el mismo usuario realizaria sus compras, invirtiendo una cantidad de tiempo considerable y mas gastos en cuanto a desplazamientos.
+
+PARTE 2 – IDENTIFICAR LOS SERVICIOS:
+
+1. ¿Qué funciones principales tiene el sistema?
+
+la función de permitir mediante una app o escritorio, la realización de pedidos que lleguen al sitio donde me encuentro.
+
+2. ¿Qué partes pueden trabajar por separado?
+
+realizar el registro, ya que puedo realizar el registro independientemente de que no funcionen otras partes.
+
+
+
+
 ---
 
