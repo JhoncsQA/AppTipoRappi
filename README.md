@@ -77,5 +77,8 @@ pago - solicita - producto y saldo a favor
 ## ¿Quién responde?
 pago - responde - producto y saldo OK
 
+## 4 ELEGIR LA ARQUITECTURA
+
+Arquitectura de microservicios.
 
 
