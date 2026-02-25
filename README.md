@@ -50,3 +50,67 @@ La app está pensada como base para aprendizaje, prototipos o evolución hacia u
 
 ---
 
+## EL PROYECTO SE LLAMARA "DOMI'S YA"
+
+
+## 1 ENTENDER EL PROBLEMA
+
+## ¿Qué problema resuelve el sistema?
+Resuelve el problema de compra y envios de paqueteria local. 
+## ¿Quién lo usará?
+La usara cualquier tipo de persona, que desee comprar o vender cualquier tipo de producto
+## ¿Qué pasaría si no existiera?
+Si no existiera las personas seguirian utilizando aplicaciones existentos donde el cobro por envio de productos es muy costoso.
+
+
+## 2 IDENTIFICAR LOS SERVICIOS
+
+## ¿Qué funciones principales tiene el sistema?
+El sistema tiene como principales funciones, filtros personalizados para la busqueda de productos, tarjetas de descuentos, envios gratis, plan padrino(para apadrinar tus familiares.)
+## ¿Qué partes pueden trabajar por separado?
+sistema de pagos, sistema de gps, sistema de manejo de usuarios. 
+## ¿Qué procesos son independientes?
+pasarela de pagos, login, compras, ventas, notificaciones. 
+
+
+## 3 ¿CÓMO SE COMUNICAN?
+
+## ¿Qué servicio necesita información de otro?
+login 
+## ¿Quién solicita datos?
+login - solicita - datos de usuarios
+## ¿Quién responde?
+login - responde - usuario y contraseña OK
+
+## ¿Qué servicio necesita información de otro?
+Pasarela de pagos 
+## ¿Quién solicita datos?
+pago - solicita - producto y saldo a favor 
+## ¿Quién responde?
+pago - responde - producto y saldo OK
+
+## 4 ELEGIR LA ARQUITECTURA
+
+Arquitectura de microservicios.
+
+## ¿Cuántos usuarios tendrá el sistema?
+el sistema inicialmente, emepzara con los estudiantes de la universidad.
+## ¿Necesita escalar?
+se necesita escalar
+## ¿Es un sistema pequeño o grande?
+en el momento iniciara grande, pero periodicamente va a ir aumentando la capacidad para manejas mas clientes. 
+
+## 5 BASE DE DATOS
+
+## ¿Qué información debe guardarse?
+Se deben tener varias tablas para el almacenamiento de la informacion, entre ellas usuarios, productos, tiendas, pagos, pedidos. 
+## ¿Qué datos son críticos?
+los datos criticos son, todos los datos personales. 
+## ¿Qué pasaría si se pierden?
+primero se perderia la confianza de los clientes. 
+
+## 6 FALLAS Y RIESGOS
+
+En el sistema podras registrarte tato como vendedor como comprados, ademas de esto tendra un usuario administrador, supervisor y otro de soporte. 
+
+
