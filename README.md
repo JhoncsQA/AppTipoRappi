@@ -113,3 +113,4 @@ primero se perderia la confianza de los clientes.
 
 En el sistema podras registrarte tato como vendedor como comprados, ademas de esto tendra un usuario administrador, supervisor y otro de soporte. 
 
+
