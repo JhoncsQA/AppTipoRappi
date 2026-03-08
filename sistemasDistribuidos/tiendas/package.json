@@ -1,0 +1,11 @@
+{
+  "name": "servicio-tiendas",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx concurrently \"node backend/index.js\" \"npx serve -l 5173 frontend\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "serve": "^14.2.3"
+  }
+}
