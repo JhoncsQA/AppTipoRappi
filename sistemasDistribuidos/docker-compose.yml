@@ -1,0 +1,40 @@
+services:
+  login:
+    build: ./login
+    container_name: login_container
+    ports:
+      - "3001:3000"
+      - "5001:5173"
+    networks:
+      - app-network
+
+  gps:
+    build: ./gps
+    container_name: gps_container
+    ports:
+      - "3002:3000"
+      - "5002:5173"
+    networks:
+      - app-network
+
+  pedidos:
+    build: ./pedidos
+    container_name: pedidos_container
+    ports:
+      - "3003:3000"
+      - "5003:5173"
+    networks:
+      - app-network
+
+  tiendas:
+    build: ./tiendas
+    container_name: tiendas_container
+    ports:
+      - "3004:3000"
+      - "5004:5173"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
