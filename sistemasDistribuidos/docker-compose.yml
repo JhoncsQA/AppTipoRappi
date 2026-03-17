@@ -1,0 +1,62 @@
+services:
+  principal:
+    build: .
+    container_name: principal_container
+    ports: ["3005:3000"]
+    command: node principal/backend/index.js
+    restart: always
+    depends_on:
+      - login
+      - gps
+      - tiendas
+      - pedidos
+
+  login:
+    build: .
+    container_name: login_container
+    command: node login/backend/index.js
+    restart: always
+    environment:
+      - MONGO_URI=mongodb://db-login:27017/login_db
+    depends_on: [db-login]
+
+  gps:
+    build: .
+    container_name: gps_container
+    command: node gps/backend/index.js
+    restart: always
+    environment:
+      - MONGO_URI=mongodb://db-gps:27017/gps_db
+    depends_on: [db-gps]
+
+  tiendas:
+    build: .
+    container_name: tiendas_container
+    command: node tiendas/backend/index.js
+    restart: always
+    environment:
+      - MONGO_URI=mongodb://db-tiendas:27017/tiendas_db
+    depends_on: [db-tiendas]
+
+  pedidos:
+    build: .
+    container_name: pedidos_container
+    command: node pedidos/backend/index.js
+    restart: always
+    environment:
+      - MONGO_URI=mongodb://db-pedidos:27017/pedidos_db
+    depends_on: [db-pedidos]
+
+  # Bases de datos (Mongo)
+  db-login:
+    image: mongo:latest
+    container_name: db-login
+  db-gps:
+    image: mongo:latest
+    container_name: db-gps
+  db-tiendas:
+    image: mongo:latest
+    container_name: db-tiendas
+  db-pedidos:
+    image: mongo:latest
+    container_name: db-pedidos

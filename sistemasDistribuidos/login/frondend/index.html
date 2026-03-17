@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Microservicio - Login</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; background-color: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Acceso al Sistema</h2>
+        <input type="text" id="user" placeholder="Usuario (admin)">
+        <input type="password" id="pass" placeholder="Contraseña (1234)">
+        <button onclick="login()">Entrar</button>
+        <p id="msg"></p>
+    </div>
+
+    <script>
+        async function login() {
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+            try {
+                const res = await fetch('http://localhost:3001/api/auth', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user, password: pass})
+                });
+                const data = await res.json();
+                document.getElementById('msg').innerText = data.mensaje || data.error;
+            } catch (err) {
+                document.getElementById('msg').innerText = "Error conectando al backend (puerto 3001)";
+            }
+        }
+    </script>
+</body>
+</html>
