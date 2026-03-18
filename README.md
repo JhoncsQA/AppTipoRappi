@@ -298,9 +298,21 @@ como el logo o ayuda informando que el sistema está en mantenimiento, evitando 
 <div class="line"></div>
 
 ## 5 ¿Cuál es el rol de cada servicio?
+
+Web (Nginx): Entrega los archivos visuales al navegador del estudiante.
+
+Api (Node): Procesa la lógica ejempplo validar si un alumno aprobó un examen).
+
+DB (Mongo): Almacena de forma persistente la información de la plataforma.
+
 <div class="line"></div>
 
 ## 6 ¿Qué ventajas tiene dividir el sistema?
+
+Permite actualizar el diseño (Frontend) sin desconectar la base de datos.
+
+Facilita el mantenimiento; si hay un error en las notas, solo se revisa el Backend.
+
 <div class="line"></div>
 
 ## 7 ¿Cómo se comunican los contenedores?
