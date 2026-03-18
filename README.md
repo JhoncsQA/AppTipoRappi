@@ -265,6 +265,31 @@ ________________________________________________________________________________
 <p><strong>[Pedidos]</strong> ─── (3. Envía Datos via REST) ───> <strong>[Pagos (IP: 10.0.5.1)]</strong></p>
 </div>
 
+<div class="section">
+<h2>  TALLER PRÁCTICO – NIVEL INTERMEDIO</h2>
+<label>1 Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa)
+<div class="line"></div>
+  
+<label>2 Identificar mínimo tres servicios (frontend, backend, base de datos)
+<div class="line"></div>
+
+<label>3 Describir cómo se comunican
+<div class="line"></div>
+
+<label>4 Indicar qué ocurre si un servicio falla
+<div class="line"></div>
+
+<label>5 ¿Cuál es el rol de cada servicio?
+<div class="line"></div>
+
+<label>6 ¿Qué ventajas tiene dividir el sistema?
+<div class="line"></div>
+
+<label>6 ¿Cómo se comunican los contenedores?
+<div class="line"></div>
+
+</div>
+
 
 
 
