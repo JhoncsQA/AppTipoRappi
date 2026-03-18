@@ -268,10 +268,17 @@ ________________________________________________________________________________
 <div class="section">
 <h2>🌐  TALLER PRÁCTICO – NIVEL INTERMEDIO</h2>
   
-<label>1 Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa)
+<label>1 Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa)</label> 
+plataforma educativa
 <div class="line"></div>
   
-<label>2 Identificar mínimo tres servicios (frontend, backend, base de datos)
+<label>2 Identificar mínimo tres servicios (frontend, backend, base de datos) </label> 
+
+Frontend (Estudiante/Profesor): Interfaz web donde se visualizan los cursos y materiales.
+
+Backend (Gestión Académica): Servicio que controla las inscripciones, carga de archivos y calificaciones.
+
+Base de Datos (Académica): Repositorio central de usuarios, cursos y registros de notas.
 <div class="line"></div>
 
 <label>3 Describir cómo se comunican
