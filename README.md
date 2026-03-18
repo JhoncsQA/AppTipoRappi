@@ -268,13 +268,13 @@ ________________________________________________________________________________
 <div class="section">
 <h2>🌐  TALLER PRÁCTICO – NIVEL INTERMEDIO</h2>
   
-<label>1 ## Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa) </label> 
+ ## 1 Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa) </label> 
 
 plataforma educativa
 
 <div class="line"></div>
   
-<label>2 Identificar mínimo tres servicios (frontend, backend, base de datos) </label> 
+## 2 Identificar mínimo tres servicios (frontend, backend, base de datos) </label> 
 
 Frontend (Estudiante/Profesor): Interfaz web donde se visualizan los cursos y materiales.
 
@@ -283,27 +283,27 @@ Backend (Gestión Académica): Servicio que controla las inscripciones, carga de
 Base de Datos (Académica): Repositorio central de usuarios, cursos y registros de notas.
 <div class="line"></div>
 
-<label>3 Describir cómo se comunican </label>
+## 3 Describir cómo se comunican </label>
 
 El Frontend solicita datos al Backend mediante peticiones JSON/HTTPS. El Backend se conecta a la Base de Datos
 mediante un driver, utilizando el nombre del servicio de red definido en Docker.
 
 <div class="line"></div>
 
-<label>4 Indicar qué ocurre si un servicio falla </label>
+## 4 Indicar qué ocurre si un servicio falla </label>
 
 Si por ejemplo la Base de Datos falla, el Backend no podrá validar usuarios; 
 pero gracias a la división de servicios, el Frontend podría seguir mostrando contenido 
 como el logo o ayuda informando que el sistema está en mantenimiento, evitando un colapso de todo el sistema.
 <div class="line"></div>
 
-<label>5 ¿Cuál es el rol de cada servicio?
+## 5 ¿Cuál es el rol de cada servicio?
 <div class="line"></div>
 
-<label>6 ¿Qué ventajas tiene dividir el sistema?
+## 6 ¿Qué ventajas tiene dividir el sistema?
 <div class="line"></div>
 
-<label>6 ¿Cómo se comunican los contenedores?
+## 7 ¿Cómo se comunican los contenedores?
 <div class="line"></div>
 
 </div>
