@@ -316,6 +316,10 @@ Facilita el mantenimiento; si hay un error en las notas, solo se revisa el Backe
 <div class="line"></div>
 
 ## 7 ¿Cómo se comunican los contenedores?
+
+Docker crea una red virtual donde los contenedores se "ven" entre sí usando sus nombres
+de servicio (como api o db_educativa) en lugar de direcciones IP variables.
+
 <div class="line"></div>
 
 </div>
