@@ -267,6 +267,7 @@ ________________________________________________________________________________
 
 <div class="section">
 <h2>  TALLER PRÁCTICO – NIVEL INTERMEDIO</h2>
+  
 <label>1 Definir el tipo de sistema (ejemplo: e-commerce, app de domicilios, plataforma educativa)
 <div class="line"></div>
   
