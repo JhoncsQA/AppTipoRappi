@@ -1,0 +1,22 @@
+
+
+services:
+  # Servicio 1: El portal web (Frontend)
+  web_educativa:
+    image: nginx
+    ports:
+      - "8081:80"  # Uso 8081 por si ya esta ocupado el 8080
+
+  # Servicio 2: (Backend)
+  api_clases:
+    image: node:18-alpine
+    environment:
+      - PORT=3000
+    command: sleep infinity
+
+  # Servicio 3: La base de datos 
+  db_notas:
+    image: mongo:latest
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=1234
