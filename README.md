@@ -276,11 +276,11 @@ plataforma educativa
   
 ## 2 Identificar mínimo tres servicios (frontend, backend, base de datos) </label> 
 
-Frontend (Estudiante/Profesor): Interfaz web donde se visualizan los cursos y materiales.
+Frontend web_educativa: Es el servidor que entrega la interfaz al usuario (estudiante).
 
-Backend (Gestión Académica): Servicio que controla las inscripciones, carga de archivos y calificaciones.
+Backend api_clases: Procesa la lógica de negocio (inscripciones, lecciones).
 
-Base de Datos (Académica): Repositorio central de usuarios, cursos y registros de notas.
+Base de Datos (Académica): db_notas: Almacena de forma persistente los datos de la plataforma.
 <div class="line"></div>
 
 ## 3 Describir cómo se comunican </label>
@@ -309,7 +309,8 @@ DB (Mongo): Almacena de forma persistente la información de la plataforma.
 
 ## 6 ¿Qué ventajas tiene dividir el sistema?
 
-Permite actualizar el diseño (Frontend) sin desconectar la base de datos.
+Permite que si el servicio de base de datos falla, el servidor web pueda seguir informando al usuario 
+en lugar de colapsar todo el sistema. Además, se pueden actualizar los servicios por separado sin afectar a los demás.
 
 Facilita el mantenimiento; si hay un error en las notas, solo se revisa el Backend.
 
@@ -317,8 +318,7 @@ Facilita el mantenimiento; si hay un error en las notas, solo se revisa el Backe
 
 ## 7 ¿Cómo se comunican los contenedores?
 
-Docker crea una red virtual donde los contenedores se "ven" entre sí usando sus nombres
-de servicio (como api o db_educativa) en lugar de direcciones IP variables.
+Se comunican a través de la red interna de Docker. Por ejemplo, el servicio api_clases puede contactar a la base de datos simplemente usando el nombre db_notas.
 
 <div class="line"></div>
 
