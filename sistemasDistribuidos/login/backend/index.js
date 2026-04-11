@@ -1,45 +1,59 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
+const mysql = require('mysql2');
 const app = express();
 
 app.use(express.json());
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://db_login:27017/login_db';
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("Login conectado a su DB independiente"))
-    .catch(err => console.error("Error en DB Login:", err));
-
-const UsuarioSchema = new mongoose.Schema({
-    username: String,
-    pass: String, 
-    email: String
-});
-const Usuario = mongoose.model('Usuario', UsuarioSchema);
-
-app.post('/api/login', (req, res) => {
-    const { user, pass } = req.body;
-
-    console.log(`Intento de login para: ${user}`);
-
-    if (user === 'anderson' && pass === '1234') {
-        return res.json({
-            status: "success",
-            usuario: "Anderson_User",
-            mensaje: "Sesión válida"
-        });
-    }
-
-    res.status(401).json({ status: "error", mensaje: "Credenciales inválidas" });
-});
-
-app.get('/api/data', (req, res) => {
-    res.json({
-        servicio: "Autenticación (Login)",
-        status: "Online",
-        id_contenedor: process.env.HOSTNAME
+function connectWithRetry() {
+    const db = mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
     });
-});
 
-app.listen(3000, () => console.log("Servicio de Login listo en puerto 3000"));
+    db.connect(err => {
+        if (err) {
+            console.log("Esperando MySQL Login...");
+            setTimeout(connectWithRetry, 3000);
+        } else {
+            console.log("Login conectado a MySQL");
+
+            db.query(`
+            CREATE TABLE IF NOT EXISTS usuarios(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario VARCHAR(50),
+            password VARCHAR(50)
+            )`);
+
+            db.query(`
+            INSERT INTO usuarios(usuario,password)
+            SELECT * FROM(
+            SELECT 'admin','123456'
+            )tmp
+            WHERE NOT EXISTS(SELECT 1 FROM usuarios LIMIT 1)`);
+
+            app.post('/api/login', (req, res) => {
+                const { usuario, password } = req.body;
+
+                db.query(
+                    "SELECT * FROM usuarios WHERE usuario=? AND password=?",
+                    [usuario, password],
+                    (e, r) => {
+                        if (r && r.length > 0) {
+                            res.json({ login: "ok" });
+                        } else {
+                            res.status(401).json({ login: "fail" });
+                        }
+                    }
+                );
+            });
+        }
+    });
+}
+
+connectWithRetry();
+
+app.listen(3000, () => {
+    console.log("Servicio Login corriendo");
+});

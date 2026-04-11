@@ -1,38 +1,51 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
+const mysql = require('mysql2');
 const app = express();
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://db_pedidos:27017/pedidos_db';
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("Servicio de Pedidos conectado a su DB"))
-    .catch(err => console.error("Error en DB Pedidos:", err));
-
-const PedidoSchema = new mongoose.Schema({
-    producto: String,
-    precio: Number,
-    estado: { type: String, default: "Procesando" },
-    fecha: { type: Date, default: Date.now }
-});
-const Pedido = mongoose.model('Pedido', PedidoSchema);
-
-app.get('/api/data', (req, res) => {
-    res.json({
-        servicio: "Gestión de Pedidos",
-        status: "Online",
-        id_contenedor: process.env.HOSTNAME,
-        resumen: {
-            pedidos_hoy: 15,
-            ultimo_pedido: "Hamburguesa Doble Carne",
-            total_ventas: "$450.000 COP"
-        },
-        mensaje: "Historial de transacciones actualizado"
+function connectWithRetry() {
+    const db = mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
     });
-});
 
-app.listen(3000, () => console.log("Servicio de Pedidos corriendo en puerto 3000"));
+    db.connect(err => {
+        if (err) {
+            console.log("Esperando MySQL Pedidos...");
+            setTimeout(connectWithRetry, 3000);
+        } else {
+            console.log("Pedidos conectado a MySQL");
+
+            db.query(`DROP TABLE IF EXISTS pedidos`);
+
+            db.query(`
+            CREATE TABLE pedidos(
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            producto VARCHAR(50),
+            estado VARCHAR(50)
+            )`);
+
+            db.query(`
+            INSERT INTO pedidos(producto,estado) VALUES
+            ('Pizza','En camino'),
+            ('Burger','Preparando'),
+            ('Sushi','Entregado')
+            `);
+
+            app.get('/api/data', (req, res) => {
+                db.query("SELECT * FROM pedidos", (e, r) => {
+                    res.json({ pedidos: r });
+                });
+            });
+        }
+    });
+}
+
+connectWithRetry();
+
+app.listen(3000, () => {
+    console.log("Servicio Pedidos corriendo");
+});
