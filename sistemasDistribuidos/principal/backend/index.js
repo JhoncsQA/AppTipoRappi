@@ -51,6 +51,15 @@ app.get('/gateway/gps', async (req, res) => {
     }
 });
 
+app.post('/gateway/tiendas', async (req, res) => {
+    try {
+        const resp = await axios.post('http://tiendas:3000/api/insert', req.body);
+        res.json(resp.data);
+    } catch (e) {
+        res.status(500).json({ error: "Error creando tienda" });
+    }
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(_frontend, 'index.html'));
 });

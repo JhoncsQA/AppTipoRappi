@@ -19,20 +19,6 @@ function connectWithRetry() {
         } else {
             console.log("Login conectado a MySQL");
 
-            db.query(`
-            CREATE TABLE IF NOT EXISTS usuarios(
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            usuario VARCHAR(50),
-            password VARCHAR(50)
-            )`);
-
-            db.query(`
-            INSERT INTO usuarios(usuario,password)
-            SELECT * FROM(
-            SELECT 'admin','123456'
-            )tmp
-            WHERE NOT EXISTS(SELECT 1 FROM usuarios LIMIT 1)`);
-
             app.post('/api/login', (req, res) => {
                 const { usuario, password } = req.body;
 
@@ -40,7 +26,11 @@ function connectWithRetry() {
                     "SELECT * FROM usuarios WHERE usuario=? AND password=?",
                     [usuario, password],
                     (e, r) => {
-                        if (r && r.length > 0) {
+                        if (e) {
+                            return res.status(500).json({ error: "Error BD" });
+                        }
+
+                        if (r.length > 0) {
                             res.json({ login: "ok" });
                         } else {
                             res.status(401).json({ login: "fail" });

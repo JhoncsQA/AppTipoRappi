@@ -21,6 +21,28 @@ async function pintarCards(lista, titulo) {
     });
 }
 
+async function crearTienda() {
+    const nombre = document.getElementById("nombre").value;
+    const categoria = document.getElementById("categoria").value;
+
+    const res = await fetch("http://localhost:3005/gateway/tiendas", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nombre,
+            categoria
+        })
+    });
+
+    const data = await res.json();
+
+    alert("Tienda creada correctamente");
+
+    cargarTiendas();
+}
+
 async function cargarTiendas() {
     const res = await fetch("http://localhost:3005/gateway/tiendas");
     const data = await res.json();
@@ -39,6 +61,8 @@ async function cargarGPS() {
     pintarCards(data.gps, "GPS");
 }
 
+
 window.cargarTiendas = cargarTiendas;
 window.cargarPedidos = cargarPedidos;
 window.cargarGPS = cargarGPS;
+window.crearTienda = crearTienda;

@@ -19,26 +19,29 @@ function connectWithRetry() {
         } else {
             console.log("Tiendas conectado a MySQL");
 
-            db.query(`DROP TABLE IF EXISTS tiendas`);
-
-            db.query(`
-            CREATE TABLE tiendas(
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            nombre VARCHAR(50),
-            categoria VARCHAR(50)
-            )`);
-
-            db.query(`
-            INSERT INTO tiendas(nombre,categoria) VALUES
-            ('Pizza Place','Comida'),
-            ('Burger House','Rapida'),
-            ('Sushi Bar','Asiatica')
-            `);
-
             app.get('/api/data', (req, res) => {
                 db.query("SELECT * FROM tiendas", (e, r) => {
                     res.json({ tiendas: r });
                 });
+            });
+
+            app.post('/api/insert', (req, res) => {
+                const { nombre, categoria } = req.body;
+
+                db.query(
+                    "INSERT INTO tiendas(nombre,categoria) VALUES(?,?)",
+                    [nombre, categoria],
+                    (e, r) => {
+                        if (e) {
+                            return res.status(500).json({ error: "Error insertando" });
+                        }
+
+                        res.json({
+                            mensaje: "Tienda creada",
+                            id: r.insertId
+                        });
+                    }
+                );
             });
         }
     });
@@ -46,6 +49,4 @@ function connectWithRetry() {
 
 connectWithRetry();
 
-app.listen(3000, () => {
-    console.log("Servicio Tiendas corriendo");
-});
+app.listen(3000);
