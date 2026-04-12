@@ -1,37 +1,52 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const path = require('path');
+const mysql = require('mysql2');
 const app = express();
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, '../frontend')));
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://db_tiendas:27017/tiendas_db';
-
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("Servicio Tiendas conectado a su DB"))
-    .catch(err => console.error("Error en DB Tiendas:", err));
-
-const TiendaSchema = new mongoose.Schema({
-    nombre: String,
-    categoria: String,
-    abierto: { type: Boolean, default: true }
-});
-const Tienda = mongoose.model('Tienda', TiendaSchema);
-
-app.get('/api/data', (req, res) => {
-    res.json({
-        servicio: "Catálogo de Tiendas",
-        status: "Online",
-        id_contenedor: process.env.HOSTNAME,
-        tiendas: [
-            { id: 101, nombre: "Pizzería Nápoles", categoria: "Italiana" },
-            { id: 102, nombre: "Burger Master", categoria: "Rápida" },
-            { id: 103, nombre: "Sushi Roll", categoria: "Asiática" }
-        ],
-        mensaje: "Catálogo cargado correctamente"
+function connectWithRetry() {
+    const db = mysql.createConnection({
+        host: process.env.MYSQL_HOST,
+        user: process.env.MYSQL_USER,
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE
     });
-});
 
-app.listen(3000, () => console.log("Servicio de Tiendas corriendo en puerto 3000"));
+    db.connect(err => {
+        if (err) {
+            console.log("Esperando MySQL Tiendas...");
+            setTimeout(connectWithRetry, 3000);
+        } else {
+            console.log("Tiendas conectado a MySQL");
+
+            app.get('/api/data', (req, res) => {
+                db.query("SELECT * FROM tiendas", (e, r) => {
+                    res.json({ tiendas: r });
+                });
+            });
+
+            app.post('/api/insert', (req, res) => {
+                const { nombre, categoria } = req.body;
+
+                db.query(
+                    "INSERT INTO tiendas(nombre,categoria) VALUES(?,?)",
+                    [nombre, categoria],
+                    (e, r) => {
+                        if (e) {
+                            return res.status(500).json({ error: "Error insertando" });
+                        }
+
+                        res.json({
+                            mensaje: "Tienda creada",
+                            id: r.insertId
+                        });
+                    }
+                );
+            });
+        }
+    });
+}
+
+connectWithRetry();
+
+app.listen(3000);
