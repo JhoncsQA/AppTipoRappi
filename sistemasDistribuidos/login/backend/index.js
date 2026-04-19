@@ -1,8 +1,10 @@
 const express = require('express');
 const mysql = require('mysql2');
-const app = express();
+const cors = require('cors');
 
+const app = express();
 app.use(express.json());
+app.use(cors());
 
 function connectWithRetry() {
     const db = mysql.createConnection({
@@ -19,6 +21,7 @@ function connectWithRetry() {
         } else {
             console.log("Login conectado a MySQL");
 
+            // LOGIN
             app.post('/api/login', (req, res) => {
                 const { usuario, password } = req.body;
 
@@ -27,17 +30,19 @@ function connectWithRetry() {
                     [usuario, password],
                     (e, r) => {
                         if (e) {
-                            return res.status(500).json({ error: "Error BD" });
+                            console.log(e);
+                            return res.status(500).json({ ok: false });
                         }
 
                         if (r.length > 0) {
-                            res.json({ login: "ok" });
+                            res.json({ ok: true });
                         } else {
-                            res.status(401).json({ login: "fail" });
+                            res.status(401).json({ ok: false });
                         }
                     }
                 );
             });
+
         }
     });
 }

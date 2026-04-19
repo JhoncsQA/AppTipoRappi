@@ -24,6 +24,17 @@ app.post('/gateway/login', async (req, res) => {
     }
 });
 
+app.get('/gateway/productos/:id', async (req, res) => {
+    try {
+        const resp = await axios.get(
+            `http://tiendas:3000/api/productos/${req.params.id}`
+        );
+        res.json(resp.data);
+    } catch (e) {
+        res.status(500).json({ error: "Error productos" });
+    }
+});
+
 app.get('/gateway/tiendas', async (req, res) => {
     try {
         const resp = await axios.get(`${MS.tiendas}/data`);
