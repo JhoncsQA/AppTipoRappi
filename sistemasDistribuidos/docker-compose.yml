@@ -2,61 +2,83 @@ services:
   principal:
     build: .
     container_name: principal_container
-    ports: ["3005:3000"]
+    ports:
+      - "3005:3000"
     command: node principal/backend/index.js
-    restart: always
     depends_on:
       - login
-      - gps
       - tiendas
       - pedidos
+      - gps
 
   login:
     build: .
     container_name: login_container
     command: node login/backend/index.js
-    restart: always
+    env_file:
+      - .env
     environment:
-      - MONGO_URI=mongodb://db-login:27017/login_db
-    depends_on: [db-login]
-
-  gps:
-    build: .
-    container_name: gps_container
-    command: node gps/backend/index.js
-    restart: always
-    environment:
-      - MONGO_URI=mongodb://db-gps:27017/gps_db
-    depends_on: [db-gps]
+      MYSQL_HOST: db-login
+      MYSQL_DATABASE: ${MYSQL_LOGIN_DB}
+    depends_on:
+      - db-login
 
   tiendas:
     build: .
     container_name: tiendas_container
     command: node tiendas/backend/index.js
-    restart: always
+    env_file:
+      - .env
     environment:
-      - MONGO_URI=mongodb://db-tiendas:27017/tiendas_db
-    depends_on: [db-tiendas]
+      MYSQL_HOST: db-tiendas
+      MYSQL_DATABASE: ${MYSQL_TIENDAS_DB}
+    depends_on:
+      - db-tiendas
 
   pedidos:
     build: .
     container_name: pedidos_container
     command: node pedidos/backend/index.js
-    restart: always
+    env_file:
+      - .env
     environment:
-      - MONGO_URI=mongodb://db-pedidos:27017/pedidos_db
-    depends_on: [db-pedidos]
+      MYSQL_HOST: db-pedidos
+      MYSQL_DATABASE: ${MYSQL_PEDIDOS_DB}
+    depends_on:
+      - db-pedidos
 
-  # Bases de datos (Mongo)
+  gps:
+    build: .
+    container_name: gps_container
+    command: node gps/backend/index.js
+    env_file:
+      - .env
+    environment:
+      MYSQL_HOST: db-gps
+      MYSQL_DATABASE: ${MYSQL_GPS_DB}
+    depends_on:
+      - db-gps
+
   db-login:
-    image: mongo:latest
-    container_name: db-login
-  db-gps:
-    image: mongo:latest
-    container_name: db-gps
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_LOGIN_DB}
+
   db-tiendas:
-    image: mongo:latest
-    container_name: db-tiendas
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_TIENDAS_DB}
+
   db-pedidos:
-    image: mongo:latest
-    container_name: db-pedidos
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_PEDIDOS_DB}
+
+  db-gps:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_GPS_DB}
