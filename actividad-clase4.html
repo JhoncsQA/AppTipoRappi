@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @@ -1,253 +0,0 @@
 <!DOCTYPE html>
 <html lang="es">
@@ -252,3 +253,258 @@ Service Discovery → permite encontrar servicios automáticamente
 </div>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Actividad Clase 4</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  color: #2c3e50;
+}
+
+h1 {
+  text-align: center;
+}
+
+.section {
+  margin-top: 30px;
+}
+
+label {
+  font-weight: bold;
+}
+
+.line {
+  border-bottom: 1px solid #ccc;
+  margin: 8px 0 16px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #e9eef3;
+}
+
+.note {
+  background: #eef7ff;
+  padding: 15px;
+  border-left: 4px solid #3498db;
+  margin-top: 20px;
+}
+
+.footer {
+  margin-top: 30px;
+  padding: 15px;
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🌐 Actividad Clase 4</h1> 
+<h2>Comunicación entre Servicios + REST + Eventos + Service Discovery</h2> 
+<p><strong>Equipo:</strong> 2</p> 
+<p><strong>Proyecto:</strong> Tipo Rappi</p>
+
+<div class="section">
+<h2>🪜 1. Interacciones entre Servicios</h2>
+
+<p><strong>Interacción 1</strong></p>
+<label>Servicio que envía:</label> <label style="color: red;">Servicio de Cliente (App/Web)</label>
+<div class="line"></div>
+<label>Servicio que recibe:</label><label style="color: red;">Servicio de Pedidos</label>
+<div class="line"></div>
+<label>Información enviada:</label><label style="color: red;">Detalles del pedido (productos, dirección, pago)</label>
+<div class="line"></div>
+<label>¿Qué sucede si no responde?</label><label style="color: red;">El usuario verá un mensaje de error tipo "No pudimos procesar tu orden" y la venta se pierde. Es el fallo más crítico porque detiene el flujo de ingresos.</label>
+<div class="line"></div>
+
+<p><strong>Interacción 2</strong></p>
+<label>Servicio que envía:</label> <label style="color: red;">Servicio de Pedidos</label>
+<div class="line"></div>
+<label>Servicio que recibe:</label><label style="color: red;">Servicio de Pagos</label>
+<div class="line"></div>
+<label>Información enviada:</label><label style="color: red;">Monto total, ID del cliente y token del método de pago</label>
+<div class="line"></div>
+<label>¿Qué sucede si no responde?</label><label style="color: red;">El pedido queda "en espera". El sistema no puede confirmar la compra y el restaurante no recibe la orden, dejando al cliente en un limbo transaccional.</label>
+<div class="line"></div>
+
+<p><strong>Interacción 3</strong></p>
+<label>Servicio que envía:</label> <label style="color: red;">Servicio de Pedidos</label>
+<div class="line"></div>
+<label>Servicio que recibe:</label><label style="color: red;">Servicio de Repartidores (Logística)</label>
+<div class="line"></div>
+<label>Información enviada:</label><label style="color: red;">Ubicación del restaurante, destino de entrega y peso/volumen del pedido</label>
+<div class="line"></div>
+<label>¿Qué sucede si no responde?</label><label style="color: red;">El pedido se prepara pero nadie pasa a recogerlo. La comida se enfría y el cliente cancela por demora extrema en la asignación.</label>
+<div class="line"></div>
+
+
+
+</div>
+
+<div class="section">
+<h2>🪜 2. REST o Eventos</h2>
+
+<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
+<tr style="background-color: #f2f2f2;">
+<th>Interacción</th>
+<th>REST</th>
+<th>Evento</th>
+<th>¿Por qué?</th>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td></td>
+<td style="color: red;">El cliente necesita una respuesta inmediata (OK/Error) para saber si su pedido fue recibido.</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td></td>
+<td style="color: red;">El pago debe validarse en tiempo real antes de avisar al restaurante; no podemos "esperar a ver si pasa".</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td style="color: red;">Una vez pagado, lanzamos el evento "Pedido_Listo" para que los repartidores disponibles se enteren sin bloquear el flujo.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>🪜 3. Síncrono o Asíncrono</h2>
+
+<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
+<tr style="background-color: #f2f2f2;">
+<th>Interacción</th>
+<th>Síncrono</th>
+<th>Asíncrono</th>
+<th>Justificación</th>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td></td>
+<td style="color: red;">El cliente no puede cerrar la app sin saber si su pedido entró al sistema correctamente.</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td></td>
+<td style="color: red;">Necesitamos confirmar el pago de inmediato para autorizar la preparación de la comida.</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td></td>
+<td style="color: red; font-weight: bold;">X</td>
+<td style="color: red;">La búsqueda de repartidores puede tomar tiempo; no bloqueamos el sistema mientras un repartidor acepta.</td>
+</tr>
+</table>
+</div>
+
+<div class="section">
+<h2>🪜 4. Eventos Importantes del Sistema</h2>
+1️⃣ Este evento se dispara cuando el pago es exitoso. Avisa simultáneamente al Restaurante para que empiece a cocinar y al Servicio de Facturación para generar el recibo.<br>
+2️⃣ Se emite cuando un "Rappitendero" acepta el pedido. Notifica al Cliente (push notification) y le da al Restaurante la señal de que alguien ya viene en camino por la comida.<br>
+3️⃣ Es el evento final. Dispara el proceso de Calificación (encuesta), libera el pago retenido al repartidor y actualiza las estadísticas de ventas del comercio.
+</div>
+
+<div class="section">
+<h2>🪜 5. Análisis de Fallos</h2>
+<p><strong>Servicio más crítico:</strong> <label style="color: red; font-weight: bold;">Servicio de Pedidos (Order Service)</label></p>
+<div class="line"></div>
+
+<p><strong>¿Qué pasaría si falla?</strong></p>
+<label style="color: red;">La aplicación queda totalmente inutilizable para transacciones nuevas. Los usuarios no pueden ver el carrito, no pueden procesar pagos y los repartidores no reciben órdenes. Es un "apagón" comercial completo.</label>
+<div class="line"></div>
+
+<p><strong>¿El sistema debe detenerse o continuar?</strong></p>
+<label style="color: red;">El sistema <strong>no</strong> debe detenerse por completo. Debería entrar en "modo de solo lectura" (Degradación Graciosa), permitiendo que los usuarios vean pedidos que ya están en curso o su historial, pero bloqueando nuevas compras de forma controlada.</label>
+<div class="line"></div>
+
+<p><strong>¿Cómo podrían manejar este fallo?</strong></p>
+<label style="color: red;">Implementando un <strong>Circuit Breaker</strong> (Disyuntor) para evitar que el fallo se propague, usando réplicas del servicio en diferentes zonas y manteniendo una base de datos distribuida que permita recuperar la información rápidamente.</label>
+<div class="line"></div>
+</div>
+
+<div class="section">
+<h2>🪜 6. Service Discovery</h2>
+<p><strong>¿Qué problema ocurre si cambia la IP de un servicio?</strong></p>
+<label style="color: red;">Se rompe la comunicación. Los demás servicios intentarían llamar a una dirección que ya no existe, causando errores de "Conexión rechazada" (Timeout) y caídas en cadena en la aplicación.</label>
+<div class="line"></div>
+
+<p><strong>¿Cómo sabría un servicio dónde encontrar otro?</strong></p>
+<label style="color: red;">Consultando un <strong>Registro de Servicios</strong> (como Netflix Eureka o Consul). El servicio pregunta por nombre (ej: "Servicio-Pagos") y el registro le devuelve la IP actual operativa.</label>
+<div class="line"></div>
+
+<p><strong>¿Por qué sería útil Service Discovery?</strong></p>
+<label style="color: red;">Porque en una app tipo Rappi, durante la hora del almuerzo, el sistema crea automáticamente 10 o 20 copias nuevas de cada servicio para aguantar el tráfico. El Discovery gestiona esas nuevas direcciones sin intervención humana.</label>
+<div class="line"></div>
+
+<p><strong>¿Dónde lo aplicarían en su sistema?</strong></p>
+<label style="color: red;">Lo aplicaríamos entre el <strong>API Gateway</strong> y los microservicios internos (Pedidos, Pagos, Repartidores) para que el tráfico siempre llegue a una instancia que esté "viva" y saludable.</label>
+<div class="line"></div>
+</div>
+
+<div class="section">
+<h2>🪜 7. Mini Diagrama</h2>
+<p>Dibujen:</p>
+<p><strong>Servicio A → Service Discovery → Servicio B</strong></p>
+</div>
+
+<div class="note">
+💡 <strong>Ayuda rápida</strong><br>
+REST → petición directa<br>
+Evento → algo ocurrió<br>
+Síncrono → espera respuesta<br>
+Asíncrono → continúa sin esperar<br>
+Service Discovery → permite encontrar servicios automáticamente
+</div>
+
+<div class="footer">
+🎤 El equipo debe poder explicar:<br>
+✔ una interacción importante<br>
+✔ un evento del sistema<br>
+✔ qué pasa si un servicio falla<br>
+✔ dónde usarían Service Discovery
+</div>
+
+</div>
+</body>
+</html>
+
+>>>>>>> f94f409ab4e50e3790444b8c44542cd6573d0a7a
