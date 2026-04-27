@@ -1,4 +1,5 @@
 services:
+
   principal:
     build: .
     container_name: principal_container
@@ -61,24 +62,42 @@ services:
 
   db-login:
     image: mysql:8.0
+    container_name: db_login_container
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_LOGIN_DB}
+    volumes:
+      - login_data:/var/lib/mysql
 
   db-tiendas:
     image: mysql:8.0
+    container_name: db_tiendas_container
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_TIENDAS_DB}
+    volumes:
+      - tiendas_data:/var/lib/mysql
 
   db-pedidos:
     image: mysql:8.0
+    container_name: db_pedidos_container
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_PEDIDOS_DB}
+    volumes:
+      - pedidos_data:/var/lib/mysql
 
   db-gps:
     image: mysql:8.0
+    container_name: db_gps_container
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_GPS_DB}
+    volumes:
+      - gps_data:/var/lib/mysql
+
+volumes:
+  login_data:
+  tiendas_data:
+  pedidos_data:
+  gps_data:
