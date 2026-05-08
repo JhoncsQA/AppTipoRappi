@@ -10,6 +10,10 @@ Captura la excepción
 Incrementa un contador de fallos
 Retorna HTTP 503 (Servicio no disponible)
 
+<img width="975" height="226" alt="image" src="https://github.com/user-attachments/assets/f321903e-9fd4-4a09-aeb7-ef586f51c564" />
+
+<img width="913" height="430" alt="image" src="https://github.com/user-attachments/assets/b1676c66-d92a-424b-a7d0-1575cb9352cd" />
+
 ---
 
 ## ¿Se protege o insiste?
@@ -35,6 +39,8 @@ fallos_mascotas
 fallos_usuarios
 
 Esto permite detectar fallos sin afectar a otros servicios que siguen funcionando.
+
+<img width="1576" height="894" alt="fase2" src="https://github.com/user-attachments/assets/7db36621-33c3-41ff-b08c-0c956df4cba0" />
 
 ```
 
@@ -116,6 +122,18 @@ circuito_abierto_usuarios = True
 Evita seguir enviando solicitudes a un servicio inestable.
 ---
 
+# 5 evidencias
+
+<img width="1359" height="937" alt="fase4" src="https://github.com/user-attachments/assets/7d7c82f4-3398-422d-b26a-6bd0156a0fb6" />
+
+<img width="424" height="326" alt="fase5" src="https://github.com/user-attachments/assets/46e78407-97aa-41f0-81fb-1a69a9f110ce" />
+
+<img width="832" height="456" alt="fase5 1" src="https://github.com/user-attachments/assets/c196bc85-9e6e-46d6-a79a-f5a94c8bbd2a" />
+ <img width="438" height="419" alt="fase5 2" src="https://github.com/user-attachments/assets/ec0c06df-5e0b-41c9-9a0e-dc7a59e9c295" />
+
+
+---
+
 # 3. Análisis Final
 El sistema ahora es más tolerante a fallos gracias al Circuit Breaker.
 
@@ -126,6 +144,7 @@ Intenta recuperarse con estado Half-Open
 Se restablece automáticamente cuando el servicio vuelve
 
 👉 Resultado: mayor estabilidad y resiliencia.
+
 
 ---
 
