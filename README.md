@@ -723,6 +723,126 @@ primero se perderia la confianza de los clientes.
 
 ## 6 FALLAS Y RIESGOS
 
+
+
+
+
+
+
 En el sistema podras registrarte tato como vendedor como comprados, ademas de esto tendra un usuario administrador, supervisor y otro de soporte. 
 
+
+
+
+// TALLER CORTE 3
+
+FASE 1 – OBSERVAR (sin modificar código)
+Servicios activos
+
+<img width="921" height="136" alt="image" src="https://github.com/user-attachments/assets/d72b96ce-3dff-4234-8717-a0c08f838eda" />
+
+Bajo el servicio 
+
+<img width="845" height="98" alt="image" src="https://github.com/user-attachments/assets/fc66cb6e-627d-445a-b8d0-8db800447274" />
+
+Verifico
+
+<img width="921" height="90" alt="image" src="https://github.com/user-attachments/assets/6b07304a-6b12-4648-bdf8-aa3222dba10e" />
+
+Logs 
+
+<img width="921" height="200" alt="image" src="https://github.com/user-attachments/assets/d94ce267-13d6-457b-892c-8c81cbf7de56" />
+
+Apago mascotas
+
+<img width="855" height="109" alt="image" src="https://github.com/user-attachments/assets/747fd709-06a8-4172-be3f-e7ec6d269146" />
+
+<img width="921" height="94" alt="image" src="https://github.com/user-attachments/assets/65def07c-058b-4165-a6c0-41966f6402d8" />
+
+<img width="456" height="195" alt="image" src="https://github.com/user-attachments/assets/687767d4-f28e-41c3-975f-1851e84ca662" />
+
+FASE 2 – APLICAR (Extensión del Circuit Breaker)
+En esta fase se decidió aplicar el comportamiento del Circuit Breaker no solamente al endpoint de mascotas, sino también a los demás servicios del gateway como /usuarios y /resumen.
+La idea principal fue evitar que el gateway siguiera intentando conectarse infinitamente a un servicio que ya se encontraba caído, ya que esto generaba muchos errores repetitivos y hacía que el sistema fuera menos eficiente.
+Para implementar esto, se creó una lógica donde cada servicio tiene su propio estado y control de fallos. De esta manera, el gateway puede identificar qué servicio está presentando problemas sin afectar completamente a los demás.
+
+<img width="420" height="585" alt="image" src="https://github.com/user-attachments/assets/634e5609-2523-4c1e-b492-c7ec9b9f6d98" />
+
+<img width="394" height="538" alt="image" src="https://github.com/user-attachments/assets/4208e148-091c-4ace-ba5a-8c759ca47892" />
+
+¿Cada servicio debe tener su propio contador de fallos?
+Sí. Se decidió manejar un contador independiente para cada servicio porque cada uno funciona de manera separada y puede fallar en momentos distintos.
+Por ejemplo, el servicio de mascotas puede estar caído mientras el de usuarios sigue funcionando correctamente. Si todos compartieran el mismo contador, un fallo en un servicio podría terminar afectando a los otros aunque realmente estuvieran funcionando bien.
+Por esa razón, se manejaron contadores independientes para:
+•	usuarios 
+•	backend de mascotas 
+Esto permitió tener un mejor control sobre el estado real de cada microservicio.
+
+¿El circuito debe abrirse de forma independiente por servicio?
+Sí. Cada servicio tiene su propio circuito.
+Se tomó esta decisión porque no tendría sentido bloquear completamente el gateway cuando solamente uno de los servicios presenta fallos.
+En la implementación realizada:
+•	si falla mascotas, solamente se abre el circuito de mascotas 
+•	si falla usuarios, solamente se abre el circuito de usuarios 
+Así el sistema sigue respondiendo parcialmente en lugar de dejar de funcionar completamente.
+Esto mejora la tolerancia a fallos y hace que el gateway sea más estable.
+
+¿Qué pasa si falla un servicio pero el otro sigue funcionando?
+Cuando un servicio falla, el otro puede seguir respondiendo normalmente porque los circuitos funcionan de manera independiente.
+Por ejemplo:
+•	si el backend de mascotas se apaga, el endpoint /usuarios continúa funcionando 
+•	pero /mascotas devuelve un mensaje indicando que el circuito está abierto o que el servicio no está disponible
+
+FASE 3 – INVESTIGAR (Half-Open)
+¿Qué significa “half-open”?
+El estado “half-open” significa que el circuito intenta verificar si el servicio ya volvió a funcionar después de haber estado caído.
+¿Cuándo se vuelve a intentar una llamada?
+La llamada se vuelve a intentar después del tiempo de espera configurado en el sistema. En nuestro caso, el gateway espera 10 segundos antes de volver a probar la conexión.
+¿Qué pasa si el servicio vuelve a fllar?
+Si el servicio vuelve a fallar, el circuito se abre nuevamente para evitar seguir haciendo solicitudes innecesarias al servicio caído.
+ 
+FASE 4 – IMPLEMENTAR (Recuperación)
+Espera controlada
+En nuestro sistema se implementó una espera controlada de 10 segundos. Cuando un servicio falla varias veces y el circuito se abre, el gateway deja de hacer solicitudes durante ese tiempo para evitar seguir generando errores innecesarios.
+
+Nuevo intento de conexión
+Después de los 10 segundos, el sistema pasa al estado “half-open” y realiza un nuevo intento de conexión para comprobar si el servicio ya volvió a funcionar.
+
+Decisión del circuito
+Si el servicio responde correctamente, el circuito se cierra nuevamente y el contador de fallos se reinicia.
+Si el servicio sigue fallando, el circuito se vuelve a abrir automáticamente y el sistema continúa bloqueando las solicitudes hasta el siguiente tiempo de espera.
+
+FASE 5 – VALIDAR
+
+Probamos el servicio http://localhost:5000/usuarios
+
+<img width="584" height="363" alt="image" src="https://github.com/user-attachments/assets/adc8f40c-ffa0-438f-ba56-ab53ccbc23a2" />
+
+Bajamos el servicio 
+
+<img width="561" height="223" alt="image" src="https://github.com/user-attachments/assets/49ede2e2-334b-4c99-9378-db331365effe" />
+
+Pero después de varios fallos consecutivos, el Circuit Breaker abrió automáticamente el circuito para evitar seguir intentando conexiones innecesarias al servicio caído.
+
+<img width="558" height="238" alt="image" src="https://github.com/user-attachments/assets/a8ca9a6d-d598-483e-aa3f-692e55cad039" />
+
+
+Pasamos a recuperar el servicio 
+
+<img width="909" height="114" alt="image" src="https://github.com/user-attachments/assets/41549c89-9337-48df-bb46-95cb56580a2d" />
+
+Recuperamos el sistema 
+
+<img width="519" height="364" alt="image" src="https://github.com/user-attachments/assets/c10146ec-a0bf-449b-ae00-535be26b02b0" />
+
+<img width="921" height="441" alt="image" src="https://github.com/user-attachments/assets/e1fd3063-1fcf-4b72-bbf6-037885edd8cd" />
+
+¿Qué cambió en el comportamiento del sistema?
+Antes de implementar el Circuit Breaker, el gateway intentaba conectarse continuamente a los servicios aunque estuvieran caídos, generando muchos errores repetitivos. Después de la implementación, el sistema ahora puede detectar fallos, abrir el circuito y detener temporalmente las solicitudes hasta intentar nuevamente la conexión.
+
+¿Qué decisiones tomaron en la implementación?
+Se decidió manejar un circuito independiente para cada servicio, junto con contadores de fallos separados. También se implementó un tiempo de espera de 10 segundos antes de volver a intentar una conexión usando el estado “half-open”.
+
+¿Qué dificultades encontraron?
+Una de las principales dificultades fue entender cómo controlar el estado del circuito sin afectar los demás servicios. También fue necesario probar diferentes escenarios apagando y levantando contenedores para verificar que el sistema realmente pudiera recuperarse automáticamente.
 
