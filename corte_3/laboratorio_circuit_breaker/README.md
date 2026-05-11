@@ -1,174 +1,100 @@
-# Fase 1 – Observar y Analizar
+Fase 1 – Observar y Analizar
+¿Qué hace el sistema actualmente?
+La arquitectura se basa en un API Gateway centralizado que actúa como el único punto de entrada para las solicitudes del cliente. Su función principal es el enrutamiento inteligente hacia los microservicios de backend.
 
-## ¿Qué hace el sistema actualmente?
+Gestión de flujo positivo: Cuando los servicios están operativos, el Gateway actúa como un puente transparente, entregando la data procesada al usuario.
 
-El sistema funciona como un API Gateway que envía peticiones a los microservicios.
+Gestión de excepciones: En presencia de latencia, caídas de servidor o errores de red, el sistema interviene. En lugar de permitir que el error colapse la experiencia del usuario, el Gateway registra la incidencia, actualiza sus contadores internos de fallos y responde con un código HTTP 503, manteniendo la integridad de la comunicación.
 
-Si un servicio responde correctamente, devuelve los datos.
-Si falla (caída, timeout o error), el gateway:
-Captura la excepción
-Incrementa un contador de fallos
-Retorna HTTP 503 (Servicio no disponible)
+¿Se protege o insiste?
+El diseño del sistema prioriza la autoprotección sobre la insistencia ciega. Aunque inicialmente intenta establecer el enlace, implementa una política de "punto de ruptura".
 
-<img width="975" height="226" alt="image" src="https://github.com/user-attachments/assets/f321903e-9fd4-4a09-aeb7-ef586f51c564" />
+Al acumularse 3 fallos consecutivos, se ejecutan las siguientes acciones de seguridad:
 
-<img width="913" height="430" alt="image" src="https://github.com/user-attachments/assets/b1676c66-d92a-424b-a7d0-1575cb9352cd" />
+Activación del Disyuntor: El estado del componente cambia a OPEN (circuito_abierto = True).
 
----
+Cese de peticiones: El Gateway bloquea de inmediato cualquier intento de conexión futuro hacia ese nodo específico.
 
-## ¿Se protege o insiste?
+Esta estrategia es vital para prevenir la saturación de recursos y evitar que un fallo local se convierta en una caída total del sistema (fallos en cascada).
 
-El sistema primero intenta comunicarse, pero luego se protege.
+Fase 2 - Preguntas de Análisis y Decisiones
+¿Cada servicio debe tener su propio contador de fallos?
+Definitivamente. En una arquitectura de microservicios, la autonomía es clave. Cada unidad (Mascotas, Usuarios, etc.) opera de forma aislada, por lo que el Gateway debe monitorearlos de manera individual.
 
-Cuando se alcanzan 3 fallos consecutivos:
-
-Se activa el Circuit Breaker
-El estado pasa a OPEN (circuito_abierto = True)
-Se bloquean nuevas peticiones al servicio
-
-Esto evita sobrecarga y fallos en cascada.
----
-
-# Fase 2 - Preguntas de Análisis y Decisiones
-
-## ¿Cada servicio debe tener su propio contador de fallos?
-
-Sí. Cada microservicio puede fallar de forma independiente, por lo que necesita su propio contador.
+Implementamos rastreadores separados como:
 
 fallos_mascotas
+
 fallos_usuarios
 
-Esto permite detectar fallos sin afectar a otros servicios que siguen funcionando.
+Tener métricas independientes permite que, si un servicio entra en crisis, el resto de la plataforma siga prestando soporte al usuario sin interrupciones innecesarias.
 
-<img width="1576" height="894" alt="fase2" src="https://github.com/user-attachments/assets/7db36621-33c3-41ff-b08c-0c956df4cba0" />
+¿El circuito debe abrirse de forma independiente por servicio?
+Sí. La independencia de los circuitos es lo que garantiza la resiliencia parcial del sistema.
 
-```
+Si el parámetro circuito_abierto_usuarios se activa, el Gateway detiene el tráfico hacia el microservicio de Usuarios, pero mantiene las rutas de Mascotas totalmente funcionales. Esto aísla el error y evita que un problema de base de datos en un módulo inhabilite todo el ecosistema de la aplicación.
 
----
+¿Qué pasa si falla un servicio pero el otro sigue funcionando?
+El Gateway entra en un modo de Degradación Controlada. En lugar de fallar por completo, el sistema entrega una respuesta híbrida.
 
-## ¿El circuito debe abrirse de forma independiente por servicio?
+El flujo es el siguiente:
 
-Sí. El Circuit Breaker debe ser independiente por servicio para aislar errores.
+Se recolecta la información de los servicios estables.
 
-circuito_abierto_mascotas = True
+Se marca técnicamente el servicio inaccesible dentro de un objeto de errores.
 
-Así, si un servicio falla, los demás continúan operando normalmente.
----
+Se devuelve un paquete de datos útil al cliente, notificando qué partes del sistema están "Bloqueadas".
 
-## ¿Qué pasa si falla un servicio pero el otro sigue funcionando?
+Esto asegura que la aplicación siga siendo útil para el usuario final a pesar de las fallas internas.
 
-El sistema responde de forma parcial.
+Fase 3 – Investigar (Half-Open)
+El estado Half-Open representa la fase de diagnóstico y recuperación del Circuit Breaker. Una vez que el sistema ha permanecido bloqueado por seguridad, necesita una forma de verificar si el peligro ha pasado sin exponerse a un colapso.
 
-Si un servicio falla, el gateway:
+Lógica de prueba: El sistema permite el paso de una única solicitud de sondeo.
 
-Devuelve los datos del servicio disponible
-Indica cuál servicio falló
+Evaluación: * Si la respuesta es exitosa (HTTP 200), el circuito se cierra y el tráfico se normaliza.
 
-Ejemplo:
+Si la conexión sigue fallando, se reactiva el bloqueo total de inmediato.
 
-{
-  "data": {
-    "mascotas": [
-      {"id": 1, "nombre": "Firulais"}
-    ]
-  },
-  "errores": {
-    "usuarios": "Bloqueado"
-  }
-}
+¿Cuándo se vuelve a intentar una llamada?
+La reactivación no es inmediata ni aleatoria; depende de una ventana de enfriamiento definida por la lógica de negocio.
 
-Esto permite mantener el sistema funcionando y mejora la tolerancia a fallos.
----
+En nuestro caso, hemos configurado un intervalo de seguridad:
 
-# Fase 3 – Investigar (Half-Open)
+tiempo_bloqueo_usuarios = 10 (segundos).
 
-Es un estado intermedio del Circuit Breaker.
+Cuando el reloj del sistema detecta que el tiempo desde el último fallo ha superado este umbral, el Gateway cambia automáticamente a un modo de "reconexión tentativa" para validar la salud del microservicio.
 
-Después de que el circuito se abre por fallos, el sistema espera un tiempo y luego hace una petición de prueba.
+¿Qué pasa si el servicio vuelve a fallar?
+Si un microservicio falla durante el intento en estado Half-Open, el sistema actúa con rigor:
 
-✅ Si el servicio responde → el circuito se cierra
-❌ Si falla → el circuito se abre nuevamente
+Se aborta la transición a estado cerrado.
 
-Permite verificar si el servicio ya se recuperó sin saturarlo.
----
+El circuito regresa instantáneamente a la posición OPEN.
 
-## ¿Cuándo se vuelve a intentar una llamada?
+Se reinicia el temporizador de bloqueo.
 
-La llamada se vuelve a intentar después de que pasa un tiempo de bloqueo configurado por el desarrollador.
+Esto previene que servicios inestables o intermitentes degraden el rendimiento general del Gateway, manteniendo el escudo de protección activo hasta que la estabilidad sea absoluta.
 
-Después de un tiempo de bloqueo configurado:
+3. Análisis Final
+La integración de esta lógica de Circuit Breaker ha transformado la robustez de la aplicación:
 
-tiempo_bloqueo_usuarios = 10
+Autonomía técnica: El sistema diagnostica y se auto-repara sin intervención externa.
 
-Cuando se cumple ese tiempo:
+Protección de recursos: Se eliminan las esperas innecesarias por timeouts en servicios caídos.
 
-Se realiza una petición de prueba
-El circuito pasa a Half-Open
-Se verifica si el servicio se recuperó
-if time.time() - ultimo_fallo_usuarios > tiempo_bloqueo_usuarios:
-```
+Transparencia: El usuario recibe respuestas claras en milisegundos, incluso ante fallas críticas de backend.
 
----
+¿Qué decisiones tomaron en la implementación?
+Para maximizar la estabilidad, optamos por:
 
-## ¿Qué pasa si el servicio vuelve a fallar?
+Segregación de Disyuntores: Controles únicos para Usuarios y Mascotas.
 
-Si falla en estado Half-Open:
+Umbral de Tolerancia: Límite estricto de 3 incidencias antes del bloqueo.
 
-El circuito se abre nuevamente
-Se bloquean las peticiones
-Se reinicia el tiempo de espera
-circuito_abierto_usuarios = True
+Recuperación Autónoma: Implementación de la lógica Half-Open para reintentos inteligentes.
 
-Evita seguir enviando solicitudes a un servicio inestable.
----
+Seguridad de Conexión: Tiempos de espera (timeouts) configurados en cada petición HTTP para evitar procesos colgados.
 
-# 5 evidencias
-
-<img width="1359" height="937" alt="fase4" src="https://github.com/user-attachments/assets/7d7c82f4-3398-422d-b26a-6bd0156a0fb6" />
-
-<img width="424" height="326" alt="fase5" src="https://github.com/user-attachments/assets/46e78407-97aa-41f0-81fb-1a69a9f110ce" />
-
-<img width="832" height="456" alt="fase5 1" src="https://github.com/user-attachments/assets/c196bc85-9e6e-46d6-a79a-f5a94c8bbd2a" />
- <img width="438" height="419" alt="fase5 2" src="https://github.com/user-attachments/assets/ec0c06df-5e0b-41c9-9a0e-dc7a59e9c295" />
-
-
----
-
-# 3. Análisis Final
-El sistema ahora es más tolerante a fallos gracias al Circuit Breaker.
-
-Detecta fallos automáticamente
-Bloquea servicios inestables
-Evita errores repetitivos al usuario
-Intenta recuperarse con estado Half-Open
-Se restablece automáticamente cuando el servicio vuelve
-
-👉 Resultado: mayor estabilidad y resiliencia.
-
-
----
-
-## ¿Qué decisiones tomaron en la implementación?
-
-Circuit Breaker independiente por servicio:
-usuarios
-mascotas
-Límite de fallos: 3 intentos
-Tiempo de bloqueo antes de reintentar
-Uso del estado Half-Open
-Implementación de timeouts en peticiones HTTP
-Manejo de errores con try/except
-
-👉 Permite un sistema más estable y controlado frente a fallos.
-
----
-
-## ¿Qué dificultades encontraron?
-
-Timeouts al simular fallos
-Comprensión del estado Half-Open
-Problemas de sincronización en Docker
-Errores de conexión al iniciar servicios
-Diferenciar fallos del servicio vs Circuit Breaker
-
-👉 Estas dificultades ayudaron a entender mejor la tolerancia a fallos en sistemas distribuidos.
+¿Qué dificultades encontraron?
+Durante el desarrollo, los retos principales fueron la orquestación de red en Docker para asegurar la visibilidad entre contenedores y la calibración del estado Half-Open, ya que un tiempo de bloqueo muy corto podría generar inestabilidad. Además, fue fundamental diferenciar correctamente los errores de código interno de los errores de conexión de red para que el contador de fallos fuera preciso.
