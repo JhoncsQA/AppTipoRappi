@@ -1,3 +1,9 @@
+Entiendo perfectamente lo que pasa. El problema es que Markdown (el lenguaje que usa GitHub y los archivos .md) es muy sensible a los espacios y a los saltos de línea. Si todo queda pegado, el navegador no entiende qué es un título y qué es un párrafo.
+
+Aquí tienes el contenido formateado correctamente. He añadido separadores --- y espacios adicionales para que, al pegarlo, se vea limpio, con los títulos grandes y las listas bien organizadas.
+
+Copia desde aquí abajo:
+
 Fase 1 – Observar y Analizar
 ¿Qué hace el sistema actualmente?
 La arquitectura se basa en un API Gateway centralizado que actúa como el único punto de entrada para las solicitudes del cliente. Su función principal es el enrutamiento inteligente hacia los microservicios de backend.
@@ -52,9 +58,7 @@ El estado Half-Open representa la fase de diagnóstico y recuperación del Circu
 
 Lógica de prueba: El sistema permite el paso de una única solicitud de sondeo.
 
-Evaluación: * Si la respuesta es exitosa (HTTP 200), el circuito se cierra y el tráfico se normaliza.
-
-Si la conexión sigue fallando, se reactiva el bloqueo total de inmediato.
+Evaluación: Si la respuesta es exitosa (HTTP 200), el circuito se cierra y el tráfico se normaliza. Si la conexión sigue fallando, se reactiva el bloqueo total de inmediato.
 
 ¿Cuándo se vuelve a intentar una llamada?
 La reactivación no es inmediata ni aleatoria; depende de una ventana de enfriamiento definida por la lógica de negocio.
@@ -76,7 +80,7 @@ Se reinicia el temporizador de bloqueo.
 
 Esto previene que servicios inestables o intermitentes degraden el rendimiento general del Gateway, manteniendo el escudo de protección activo hasta que la estabilidad sea absoluta.
 
-3. Análisis Final
+Análisis Final
 La integración de esta lógica de Circuit Breaker ha transformado la robustez de la aplicación:
 
 Autonomía técnica: El sistema diagnostica y se auto-repara sin intervención externa.
