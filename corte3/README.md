@@ -10,6 +10,10 @@ Captura la excepción
 Incrementa un contador de fallos
 Retorna HTTP 503 (Servicio no disponible)
 
+Servicios funcionando correctamente
+<img width="1229" height="835" alt="image" src="https://github.com/user-attachments/assets/be069b1d-0a57-4e3e-9c92-a98e6878f092" />
+
+<img width="1241" height="844" alt="image" src="https://github.com/user-attachments/assets/3d7b438c-2340-4e57-828c-50a9d86ba2ed" />
 
 
 ---
