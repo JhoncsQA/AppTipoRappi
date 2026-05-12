@@ -42,7 +42,12 @@ fallos_usuarios
 
 Esto permite detectar fallos sin afectar a otros servicios que siguen funcionando.
 
-<img width="1576" height="894" alt="fase2" src="https://github.com/user-attachments/assets/7db36621-33c3-41ff-b08c-0c956df4cba0" />
+Se apaga backend donde se encuentra mascotas
+<img width="1328" height="488" alt="image" src="https://github.com/user-attachments/assets/1189ea3d-c303-4f89-9c88-ef543259c691" />
+Se valida nuevamente la petición
+
+<img width="1243" height="856" alt="image" src="https://github.com/user-attachments/assets/90557551-4e4a-4738-b626-4498c5036466" />
+
 
 ```
 
