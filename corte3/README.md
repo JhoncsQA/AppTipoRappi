@@ -10,6 +10,10 @@ Captura la excepción
 Incrementa un contador de fallos
 Retorna HTTP 503 (Servicio no disponible)
 
+Servicios funcionando correctamente
+<img width="1229" height="835" alt="image" src="https://github.com/user-attachments/assets/be069b1d-0a57-4e3e-9c92-a98e6878f092" />
+
+<img width="1241" height="844" alt="image" src="https://github.com/user-attachments/assets/3d7b438c-2340-4e57-828c-50a9d86ba2ed" />
 
 
 ---
@@ -38,7 +42,12 @@ fallos_usuarios
 
 Esto permite detectar fallos sin afectar a otros servicios que siguen funcionando.
 
-<img width="1576" height="894" alt="fase2" src="https://github.com/user-attachments/assets/7db36621-33c3-41ff-b08c-0c956df4cba0" />
+Se apaga backend donde se encuentra mascotas
+<img width="1328" height="488" alt="image" src="https://github.com/user-attachments/assets/1189ea3d-c303-4f89-9c88-ef543259c691" />
+Se valida nuevamente la petición
+
+<img width="1243" height="856" alt="image" src="https://github.com/user-attachments/assets/90557551-4e4a-4738-b626-4498c5036466" />
+
 
 ```
 
@@ -122,12 +131,16 @@ Evita seguir enviando solicitudes a un servicio inestable.
 
 # 5 evidencias
 
-<img width="1359" height="937" alt="fase4" src="https://github.com/user-attachments/assets/7d7c82f4-3398-422d-b26a-6bd0156a0fb6" />
+Se baja el servicio de usuarios
+<img width="1326" height="565" alt="image" src="https://github.com/user-attachments/assets/17af4e1a-d492-4c1d-87bb-5b10e9bbc071" />
+Lleva su contador de fallos
+<img width="1238" height="740" alt="image" src="https://github.com/user-attachments/assets/d8809757-1b75-4a53-b11c-83cd837172b2" />
+Despues de los reintentos se activa el circuit
+<img width="1249" height="847" alt="image" src="https://github.com/user-attachments/assets/0307da1d-4aa7-4fe5-a6b4-47d9336e10dc" />
+Y el servicio queda bloqueado temporalmente
 
-<img width="424" height="326" alt="fase5" src="https://github.com/user-attachments/assets/46e78407-97aa-41f0-81fb-1a69a9f110ce" />
+<img width="1251" height="833" alt="image" src="https://github.com/user-attachments/assets/baadd9fe-aaf7-494e-a3ad-c591327042fa" />
 
-<img width="832" height="456" alt="fase5 1" src="https://github.com/user-attachments/assets/c196bc85-9e6e-46d6-a79a-f5a94c8bbd2a" />
- <img width="438" height="419" alt="fase5 2" src="https://github.com/user-attachments/assets/ec0c06df-5e0b-41c9-9a0e-dc7a59e9c295" />
 
 
 ---
