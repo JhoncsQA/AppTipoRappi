@@ -28,9 +28,9 @@ def relacion():
     usuario = None
     for i in range(3):
         try:
-            response = requests.get("http://usuarios:5000/usuarios", timeout=2)
-            if response.status_code == 200:
-                usuarios = response.json()
+                
+
+                
                 usuario = usuarios[0]["nombre"] if usuarios else None
                 break
         except:
