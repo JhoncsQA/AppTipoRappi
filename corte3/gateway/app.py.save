@@ -1,7 +1,6 @@
 from flask import Flask, jsonify
-
-import time
 import requests
+import time
 
 app = Flask(__name__)
 
@@ -25,6 +24,9 @@ def mascotas():
     global fallos_mascotas, circuito_abierto_mascotas, ultimo_fallo_mascotas
 
     # Circuit Breaker abierto
+
+
+
     if circuito_abierto_mascotas:
 
         tiempo_actual = time.time()
@@ -34,16 +36,16 @@ def mascotas():
             print("Estado Half-Open: Intentando reconexión...", flush=True)
 
             try:
-                #inicio = time.time()
-                #Nuevo intanto para la reconexion
+                inicio = time.time()
                 response = requests.get(URL_MASCOTAS, timeout=4)
-                #fin=time.time()
+                fin=time.time()
+                
                  # Si funciona → cerrar circuito
                 circuito_abierto_mascotas = False
                 fallos_mascotas = 0
 
                 print("[GATEWAY] Consultando servicio mascotas",flush=True)
-                #print(f"Tiempo de respuesta: {fin-inicio:.2f}", flush=True)
+                print(f"Tiempo de respuesta: {fin-inicio}", flush=True)
                 
                 return response.json()
             
