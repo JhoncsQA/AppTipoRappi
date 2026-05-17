@@ -1,3 +1,0 @@
-# Dependencias del gateway
-flask
-requests
