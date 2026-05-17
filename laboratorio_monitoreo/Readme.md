@@ -26,7 +26,7 @@ Implementado tanto en el Gateway como en cada microservicio.
 ### Funcionamiento
 
 ```text
-CERRADO → ABIERTO → MEDIO_ABIERTO → CERRADO
+CERRADO → ABIERTO → MEDIO_ABIERTO
 ```
 
 ### Características
@@ -84,11 +84,6 @@ Se obtiene:
 - Uptime
 - Fallos acumulados
 
----
-
-# Características del Sistema
-
-El sistema permite:
 
 - Detectar servicios caídos automáticamente
 - Aislar fallos mediante Circuit Breaker
@@ -96,13 +91,3 @@ El sistema permite:
 - Monitorear el estado general de la arquitectura
 - Mejorar la tolerancia a fallos
 
----
-
-# Tecnologías Utilizadas
-
-- Docker Compose
-- API Gateway
-- Microservicios
-- JSON Persistence
-- Circuit Breaker Pattern
-- HTTP Monitoring
