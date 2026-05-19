@@ -138,3 +138,58 @@ h2 {
 .login-card input:focus {
     border-color: #ff4d4d;
 }
+
+
+.formulario {
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    margin-bottom: 20px;
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+
+}
+
+.formulario input {
+
+    flex: 1;
+
+    min-width: 200px;
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    outline: none;
+
+}
+
+.formulario input:focus {
+
+    border-color: #ff4d4d;
+
+}
+
+.formulario button {
+
+    background: #28a745;
+
+}
+
+.formulario button:hover {
+
+    background: #218838;
+
+}

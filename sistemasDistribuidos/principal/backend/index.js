@@ -24,36 +24,28 @@ const MS = {
 
 
 let fallosPedidos = 0;
-
 let circuitoPedidos = false;
-
 let ultimoFalloPedidos = 0;
 
 
 let fallosGPS = 0;
-
 let circuitoGPS = false;
-
 let ultimoFalloGPS = 0;
 
 
 
 let fallosTiendas = 0;
-
 let circuitoTiendas = false;
-
 let ultimoFalloTiendas = 0;
 
 
 const MAX_FALLOS = 3;
-
 const TIEMPO_BLOQUEO = 5000;
 
 
 function circuitoAbierto(circuito, ultimoFallo) {
 
     if (!circuito) {
-
         return false;
     }
 
@@ -61,9 +53,7 @@ function circuitoAbierto(circuito, ultimoFallo) {
 
     // HALF OPEN
     if (tiempoActual - ultimoFallo > TIEMPO_BLOQUEO) {
-
         console.log("Intentando reconexión...");
-
         return false;
     }
 
@@ -104,9 +94,7 @@ app.post('/gateway/login', async (req, res) => {
 app.get('/gateway/tiendas', async (req, res) => {
 
     if (circuitoAbierto(circuitoTiendas, ultimoFalloTiendas)) {
-
         console.log("[TIENDAS] Circuito abierto");
-
         return res.status(503).json({
             error: "Servicio Tiendas bloqueado"
         });
@@ -129,9 +117,7 @@ app.get('/gateway/tiendas', async (req, res) => {
         fallosTiendas = 0;
 
         circuitoTiendas = false;
-
         console.log("[TIENDAS] Servicio funcionando");
-
         res.json(resp.data);
 
     } catch (e) {
@@ -143,11 +129,8 @@ app.get('/gateway/tiendas', async (req, res) => {
         );
 
         if (fallosTiendas >= MAX_FALLOS) {
-
             circuitoTiendas = true;
-
             ultimoFalloTiendas = Date.now();
-
             console.log("[TIENDAS] Circuito abierto");
         }
 
@@ -161,9 +144,7 @@ app.get('/gateway/tiendas', async (req, res) => {
 app.get('/gateway/pedidos', async (req, res) => {
 
     if (circuitoAbierto(circuitoPedidos, ultimoFalloPedidos)) {
-
         console.log("[PEDIDOS] Circuito abierto");
-
         return res.status(503).json({
             error: "Servicio Pedidos bloqueado"
         });
@@ -200,11 +181,8 @@ app.get('/gateway/pedidos', async (req, res) => {
         );
 
         if (fallosPedidos >= MAX_FALLOS) {
-
             circuitoPedidos = true;
-
             ultimoFalloPedidos = Date.now();
-
             console.log("[PEDIDOS] Circuito abierto");
         }
 
@@ -218,9 +196,7 @@ app.get('/gateway/pedidos', async (req, res) => {
 app.get('/gateway/gps', async (req, res) => {
 
     if (circuitoAbierto(circuitoGPS, ultimoFalloGPS)) {
-
         console.log("[GPS] Circuito abierto");
-
         return res.status(503).json({
             error: "Servicio GPS bloqueado"
         });
@@ -322,11 +298,8 @@ app.post('/gateway/tiendas', async (req, res) => {
 app.get('/health', async (req, res) => {
 
     let login = "down";
-
     let tiendas = "down";
-
     let pedidos = "down";
-
     let gps = "down";
 
     try {
@@ -375,12 +348,10 @@ app.get('/health', async (req, res) => {
         gateway: "ok",
 
         servicios: {
-
             login,
             tiendas,
             pedidos,
             gps
-
         }
 
     });
@@ -388,7 +359,6 @@ app.get('/health', async (req, res) => {
 
 
 app.get('/', (req, res) => {
-
     res.sendFile(
         path.join(_frontend, 'index.html')
     );
@@ -396,7 +366,6 @@ app.get('/', (req, res) => {
 
 
 app.use((req, res) => {
-
     res.status(404).sendFile(
         path.join(_frontend, 'index.html')
     );

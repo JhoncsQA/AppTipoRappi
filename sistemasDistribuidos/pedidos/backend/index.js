@@ -19,93 +19,55 @@ function connectWithRetry() {
     db.connect(err => {
 
         if (err) {
-
             console.log("Esperando MySQL Pedidos...");
-
             setTimeout(connectWithRetry, 3000);
-
         } else {
-
             console.log("Pedidos conectado a MySQL");
 
-
             app.get('/api/data', (req, res) => {
-
                 const inicio = Date.now();
-
                 db.query(
-
                     "SELECT * FROM pedidos",
-
                     (e, r) => {
-
-
                         if (e) {
-
                             console.log(
-
                                 "[PEDIDOS] Error en base de datos"
-
                             );
-
                             console.log(e);
-
                             return res.status(500).json({
-
                                 error: "Error base de datos"
-
                             });
                         }
 
                         const fin = Date.now();
-
                         console.log(
-
                             `[PEDIDOS] Tiempo respuesta: ${fin - inicio} ms`
-
                         );
 
                         console.log(
-
                             "[PEDIDOS] Consulta exitosa"
-
                         );
 
 
                         res.json({
-
                             pedidos: r
-
                         });
-
                     }
-
                 );
-
             });
 
             app.get('/health', (req, res) => {
-
                 db.query(
-
                     "SELECT 1",
-
                     (e) => {
-
                         if (e) {
-
                             console.log(
-
                                 "[PEDIDOS] MySQL DOWN"
-
                             );
-
                             return res.status(503).json({
-
                                 status: "down",
                                 service: "pedidos",
                                 database: "down"
-
                             });
                         }
 
@@ -116,23 +78,15 @@ function connectWithRetry() {
                             database: "ok"
 
                         });
-
                     }
-
                 );
-
             });
-
         }
-
     });
-
 }
 
 connectWithRetry();
 
 app.listen(3000, () => {
-
     console.log("🚀 Servicio Pedidos corriendo");
-
 });
