@@ -1,0 +1,32 @@
+[
+    {
+      "id": 1,
+      "cliente": "Juan Perez",
+      "producto": "Teclado Mecanico",
+      "cantidad": 2,
+      "precio_unitario": 120000,
+      "total": 240000,
+      "estado": "enviado",
+      "fecha": "2026-05-19"
+    },
+    {
+      "id": 2,
+      "cliente": "Maria Gomez",
+      "producto": "Mouse Gamer",
+      "cantidad": 1,
+      "precio_unitario": 85000,
+      "total": 85000,
+      "estado": "pendiente",
+      "fecha": "2026-05-18"
+    },
+    {
+      "id": 3,
+      "cliente": "Carlos Ramirez",
+      "producto": "Monitor 24 pulgadas",
+      "cantidad": 1,
+      "precio_unitario": 650000,
+      "total": 650000,
+      "estado": "entregado",
+      "fecha": "2026-05-17"
+    }
+  ]

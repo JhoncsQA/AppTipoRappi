@@ -21,65 +21,25 @@ URL_USUARIOS = "http://usuarios:5000/usuarios"
 
 @app.route("/mascotas")
 def mascotas():
-
-    global fallos_mascotas, circuito_abierto_mascotas, ultimo_fallo_mascotas
-
-    # Circuit Breaker abierto
+    global circuito_abierto_mascotas, fallos_mascotas
     if circuito_abierto_mascotas:
-
-        tiempo_actual = time.time()
-
-        #Espera controlada
-        if tiempo_actual - ultimo_fallo_mascotas > tiempo_bloqueo_mascotas:
-            print("Estado Half-Open: Intentando reconexión...", flush=True)
-
-            try:
-                #inicio = time.time()
-                #Nuevo intanto para la reconexion
-                response = requests.get(URL_MASCOTAS, timeout=4)
-                #fin=time.time()
-                 # Si funciona → cerrar circuito
-                circuito_abierto_mascotas = False
-                fallos_mascotas = 0
-
-                print("[GATEWAY] Consultando servicio mascotas",flush=True)
-                #print(f"Tiempo de respuesta: {fin-inicio:.2f}", flush=True)
-                
-                return response.json()
-            
-            except Exception as e:
-                print(e, flush=True)
-
-                # Si vuelve a fallar → abrir otra vez
-                ultimo_fallo_mascotas = time.time()
-
-                print("El servicio sigue fallando. Circuito abierto nuevamente", flush=True)
-
-                return {"error": "Servicio temporalmente bloqueado"}, 503
-        else:
-            print("El circuito esta abierto", flush=True)
-
-            return {"error": "Servicio temporalmente bloqueado"}, 503
-    
+        return {"error": "Servicio temporalmente bloqueado"}, 503
     try:
-        response = requests.get(URL_MASCOTAS, timeout=4)
+        inicio = time.time()
+        print("[GATEWAY], consultando el servicio de mascotas", flush=True)
+        response = requests.get(URL_MASCOTAS, timeout= 4)
         fallos_mascotas = 0
+        fin = time.time()
+        print(f"Tiempo de respuesta: {fin - inicio}", flush=True)
         return response.json()
-    
-    except Exception as e:
-        print(e, flush=True)
+    except:
+        fallos_mascotas +=1
+        print(f"Numero de fallos {fallos_mascotas}", flush= True)
 
-        fallos_mascotas += 1
-        print(f"Fallo número {fallos_mascotas}", flush=True)
-
-        # Abrir circuito
-        if fallos_mascotas >= 3:
-            circuito_abierto_mascotas = True
-            ultimo_fallo_mascotas = time.time()
-            print("Circuito abierto", flush=True)
-
-        return {"error": "Servicio no disponible"}, 503
-
+        if fallos_mascotas >=3:
+            circuito_abierto_mascotas= True
+            print("El circuit breaker es True", flush= True)
+        return {"error": "El servicio de mascotas no responde"}, 503
 
 @app.route("/usuarios")
 def usuarios():
@@ -99,6 +59,7 @@ def usuarios():
             try:
                 # nuevo intento
                 response = requests.get(URL_USUARIOS, timeout=2)
+                print("Reconexion exitosa, cerrando circuito", flush=True)
 
                 # SI FUNCIONA → cerrar circuito
                 circuito_abierto_usuarios = False

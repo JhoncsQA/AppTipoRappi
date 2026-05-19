@@ -1,0 +1,28 @@
+[
+    {
+      "id": "1",
+      "cliente": {
+        "id": "CLI-001",
+        "nombre": "Juan Pérez",
+        "email": "juan.perez@example.com"
+      },
+      "monto": 150000,
+      "moneda": "COP",
+      "metodo_pago": "tarjeta_credito",
+      "estado": "aprobado",
+      "fecha_pago": "2026-05-19T10:15:00Z"
+      },
+    {
+      "id": "2",
+      "cliente": {
+        "id": "CLI-002",
+        "nombre": "María Gómez",
+        "email": "maria.gomez@example.com"
+      },
+      "monto": 89000,
+      "moneda": "COP",
+      "metodo_pago": "nequi",
+      "estado": "pendiente",
+      "fecha_pago": "2026-05-18T16:40:00Z"
+      }
+]
