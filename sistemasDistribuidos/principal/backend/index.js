@@ -6,38 +6,29 @@ const app = express();
 
 app.use(express.json());
 
-
 const _frontend = path.join(__dirname, '..', 'frontend');
 
 app.use(express.static(_frontend));
 
-
 const MS = {
-
     login: 'http://login:3000/api',
     tiendas: 'http://tiendas:3000/api',
     pedidos: 'http://pedidos:3000/api',
     gps: 'http://gps:3000/api'
-
 };
-
 
 
 let fallosPedidos = 0;
 let circuitoPedidos = false;
 let ultimoFalloPedidos = 0;
 
-
 let fallosGPS = 0;
 let circuitoGPS = false;
 let ultimoFalloGPS = 0;
 
-
-
 let fallosTiendas = 0;
 let circuitoTiendas = false;
 let ultimoFalloTiendas = 0;
-
 
 const MAX_FALLOS = 3;
 const TIEMPO_BLOQUEO = 5000;
@@ -56,10 +47,8 @@ function circuitoAbierto(circuito, ultimoFallo) {
         console.log("Intentando reconexión...");
         return false;
     }
-
     return true;
 }
-
 
 app.post('/gateway/login', async (req, res) => {
 
@@ -83,13 +72,11 @@ app.post('/gateway/login', async (req, res) => {
     } catch (e) {
 
         console.log("[LOGIN] Error");
-
         res.status(500).json({
             error: "Error en Login"
         });
     }
 });
-
 
 app.get('/gateway/tiendas', async (req, res) => {
 
@@ -103,7 +90,6 @@ app.get('/gateway/tiendas', async (req, res) => {
     try {
 
         const inicio = Date.now();
-
         const resp = await axios.get(
             `${MS.tiendas}/data`
         );
@@ -115,7 +101,6 @@ app.get('/gateway/tiendas', async (req, res) => {
         );
 
         fallosTiendas = 0;
-
         circuitoTiendas = false;
         console.log("[TIENDAS] Servicio funcionando");
         res.json(resp.data);
@@ -139,7 +124,6 @@ app.get('/gateway/tiendas', async (req, res) => {
         });
     }
 });
-
 
 app.get('/gateway/pedidos', async (req, res) => {
 
@@ -165,11 +149,8 @@ app.get('/gateway/pedidos', async (req, res) => {
         );
 
         fallosPedidos = 0;
-
         circuitoPedidos = false;
-
         console.log("[PEDIDOS] Servicio funcionando");
-
         res.json(resp.data);
 
     } catch (e) {
@@ -191,7 +172,6 @@ app.get('/gateway/pedidos', async (req, res) => {
         });
     }
 });
-
 
 app.get('/gateway/gps', async (req, res) => {
 
@@ -217,11 +197,8 @@ app.get('/gateway/gps', async (req, res) => {
         );
 
         fallosGPS = 0;
-
         circuitoGPS = false;
-
         console.log("[GPS] Servicio funcionando");
-
         res.json(resp.data);
 
     } catch (e) {
@@ -233,11 +210,8 @@ app.get('/gateway/gps', async (req, res) => {
         );
 
         if (fallosGPS >= MAX_FALLOS) {
-
             circuitoGPS = true;
-
             ultimoFalloGPS = Date.now();
-
             console.log("[GPS] Circuito abierto");
         }
 
@@ -253,13 +227,11 @@ app.get('/gateway/productos/:id', async (req, res) => {
     try {
 
         const inicio = Date.now();
-
         const resp = await axios.get(
             `http://tiendas:3000/api/productos/${req.params.id}`
         );
 
         const fin = Date.now();
-
         console.log(
             `[PRODUCTOS] Tiempo respuesta: ${fin - inicio} ms`
         );
@@ -274,11 +246,9 @@ app.get('/gateway/productos/:id', async (req, res) => {
     }
 });
 
-
 app.post('/gateway/tiendas', async (req, res) => {
 
     try {
-
         const resp = await axios.post(
             'http://tiendas:3000/api/insert',
             req.body
@@ -297,75 +267,107 @@ app.post('/gateway/tiendas', async (req, res) => {
 
 app.get('/health', async (req, res) => {
 
-    let login = "down";
-    let tiendas = "down";
-    let pedidos = "down";
-    let gps = "down";
+    async function verificarServicio(
+        nombre,
+        url,
+        circuito,
+        ultimoFallo,
+        fallos
+    ) {
 
-    try {
+        const inicio = Date.now();
 
-        await axios.get(
-            'http://login:3000/health'
-        );
+        try {
 
-        login = "ok";
+            await axios.get(url);
+            const tiempo = Date.now() - inicio;
+            return {
 
-    } catch {}
+                estado: "ok",
+                tiempo_respuesta_ms: tiempo,
+                circuito: circuito
+                    ? "abierto"
+                    : "cerrado",
+                fallos: fallos,
+                tiempo_caido_ms: 0
+            };
 
-    try {
+        } catch (e) {
 
-        await axios.get(
-            'http://tiendas:3000/health'
-        );
+            const tiempoCaido = circuito
+                ? Date.now() - ultimoFallo
+                : 0;
 
-        tiendas = "ok";
+            return {
 
-    } catch {}
+                estado: "down",
+                tiempo_respuesta_ms: null,
+                circuito: circuito
+                    ? "abierto"
+                    : "cerrado",
+                fallos: fallos,
+                tiempo_caido_ms: tiempoCaido
+            };
+        }
+    }
 
-    try {
+    const login = await verificarServicio(
+        "login",
+        "http://login:3000/health",
+        false,
+        0,
+        0
+    );
 
-        await axios.get(
-            'http://pedidos:3000/health'
-        );
+    const tiendas = await verificarServicio(
+        "tiendas",
+        "http://tiendas:3000/health",
+        circuitoTiendas,
+        ultimoFalloTiendas,
+        fallosTiendas
+    );
 
-        pedidos = "ok";
+    const pedidos = await verificarServicio(
+        "pedidos",
+        "http://pedidos:3000/health",
+        circuitoPedidos,
+        ultimoFalloPedidos,
+        fallosPedidos
+    );
 
-    } catch {}
-
-    try {
-
-        await axios.get(
-            'http://gps:3000/health'
-        );
-
-        gps = "ok";
-
-    } catch {}
-
+    const gps = await verificarServicio(
+        "gps",
+        "http://gps:3000/health",
+        circuitoGPS,
+        ultimoFalloGPS,
+        fallosGPS
+    );
 
     res.json({
 
         gateway: "ok",
-
+        timestamp: new Date(),
         servicios: {
             login,
             tiendas,
             pedidos,
             gps
         }
-
     });
 });
 
 
 app.get('/', (req, res) => {
+
     res.sendFile(
         path.join(_frontend, 'index.html')
     );
 });
 
 
+
 app.use((req, res) => {
+
     res.status(404).sendFile(
         path.join(_frontend, 'index.html')
     );
@@ -375,5 +377,4 @@ app.use((req, res) => {
 app.listen(3000, '0.0.0.0', () => {
 
     console.log("🚀 Gateway corriendo");
-
 });
