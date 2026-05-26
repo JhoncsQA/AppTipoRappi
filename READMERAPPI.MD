@@ -133,7 +133,7 @@ Todo el sistema se encuentra contenerizado mediante Docker.
 
 # 5. Instrucciones de Ejecución
 
-## Opción 1 — Docker (Recomendada)
+## — Docker 
 
 ```bash id="1vjlwm"
 docker-compose up --build
@@ -153,26 +153,7 @@ http://localhost:3005
 
 ---
 
-## Opción 2 — Ejecución Manual
 
-### 1. Iniciar Gateway
-
-```bash id="zcq27g"
-cd principal
-npm install
-node backend/index.js
-```
-
-### 2. Iniciar microservicios
-
-```bash id="2johjw"
-cd ../login && npm install && node backend/index.js
-cd ../tiendas && npm install && node backend/index.js
-cd ../pedidos && npm install && node backend/index.js
-cd ../gps && npm install && node backend/index.js
-```
-
----
 
 ## Requisitos Previos
 
@@ -223,10 +204,6 @@ Microservicio encargado de validar credenciales de usuario.
 
 * `login_db`
 
-### Consulta principal
-
-```sql id="nkn0bi"
-SELECT * FROM usuarios WHERE usuario=? AND password=?
 ```
 
 ### Funcionalidad
@@ -287,11 +264,7 @@ Microservicio encargado del seguimiento de repartidores.
 
 * `gps_db`
 
-### Funcionalidades
 
-* Ubicaciones GPS
-* Coordenadas en tiempo real
-* Radar animado en frontend
 
 ---
 
