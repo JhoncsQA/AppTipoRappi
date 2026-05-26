@@ -1,81 +1,323 @@
-# Sistema Distribuido de Microservicios con Arquitectura de Resiliencia (Circuit Breaker)
+# AppTipoRappi - Arquitectura de Microservicios
 
-Este proyecto consiste en un ecosistema de microservicios desarrollado para la asignatura de Sistemas Distribuidos. Implementa un patrón de **API Gateway** centralizado que actúa como orquestador y aplica mecanismos de tolerancia a fallos (**Circuit Breaker** y **Monitoreo de Latencia**) para garantizar la alta disponibilidad del sistema.
+## 1. Descripción del Sistema
 
----
+Aplicación tipo **Rappi** orientada al servicio de delivery y e-commerce, construida bajo arquitectura de microservicios.
 
-## 🚀 Descripción del Sistema
+El sistema está compuesto por 5 microservicios independientes encargados de:
 
-El sistema está diseñado bajo el enfoque de arquitectura orientada a microservicios (SOA). Cada componente resuelve una necesidad de negocio específica (Autenticación, Gestión de Tiendas, Pedidos, GPS y Mascotas), aislando sus datos en bases de datos dedicadas. 
+* Autenticación de usuarios
+* Gestión de tiendas y productos
+* Gestión de pedidos
+* Seguimiento GPS de repartidores
 
-Para evitar el acoplamiento y proteger los servicios de fallos en cascada, el **Gateway Principal** intercepta el tráfico y monitorea la salud de los backends. Si un servicio experimenta latencia o caídas consecutivas, el Gateway abre el circuito de forma autónoma, protegiendo los recursos del servidor y ofreciendo respuestas controladas (degradación graciosa).
+El frontend consiste en una SPA (*Single Page Application*) desarrollada en HTML, CSS y JavaScript vanilla con temática visual estilo Rappi.
 
----
-
-## 📐 Arquitectura
-
-El sistema utiliza una arquitectura descentralizada coordinada por un API Gateway (Orquestación):
-
-* **Capa de Cliente:** Frontend estático y peticiones HTTP externas.
-* **Capa de Puerta de Enlace (Gateway):** Enrutador, balanceador conceptual y controlador de estados del Circuit Breaker (Cerrado, Abierto, Half-Open).
-* **Capa de Negocio (Microservicios):** Servicios independientes en Node.js/Express y Python/Flask.
-* **Capa de Datos:** Instancias independientes de bases de datos MySQL por servicio para cumplir con el principio de *Database-per-Microservice*.
+Todo el sistema se encuentra contenerizado mediante Docker.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+# 2. Arquitectura
 
-* **Backend & Servicios:** Node.js (Express), Python (Flask)
-* **Bases de Datos:** MySQL
-* **Concurrencia & Despliegue:** Docker, Docker Compose, `concurrently`
-* **Monitoreo:** Librería `requests` (Python), medición de Timestamps nativos.
+## Patrón Arquitectónico
 
----
+* API Gateway
+* Microservicios
+* Database per Service
 
-## 📂 Explicación de Servicios
+```txt id="ozw4x0"
+                    ┌──────────────┐
+                    │   Usuario     │
+                    │  (Navegador)  │
+                    └──────┬───────┘
+                           │ :3005
+                    ┌──────▼───────┐
+                    │   PRINCIPAL   │
+                    │ (API Gateway) │
+                    └──┬───┬───┬───┘
+                       │   │   │
+              ┌────────┘   │   └────────┐
+              ▼             ▼            ▼
+        ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+        │  LOGIN   │ │ TIENDAS  │ │ PEDIDOS  │ │   GPS    │
+        │ :3000    │ │ :3000    │ │ :3000    │ │ :3000    │
+        └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘
+             │            │            │            │
+             ▼            ▼            ▼            ▼
+        ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+        │ db-login │ │db-tiendas│ │db-pedidos│ │  db-gps  │
+        │  MySQL   │ │  MySQL   │ │  MySQL   │ │  MySQL   │
+        └──────────┘ └──────────┘ └──────────┘ └──────────┘
+```
 
-El ecosistema se divide en el núcleo del sistema y los laboratorios especializados del Corte 3:
+## Características de la Arquitectura
 
-### Núcleo del Sistema (Node.js / Express)
-1.  **Gateway Principal (`/principal`):** Orquestador central. Recibe las peticiones del frontend y las redirige a los microservicios internos. Implementa el patrón **Circuit Breaker** para los servicios de Tiendas, Pedidos y GPS bajo las siguientes reglas:
-    * Máximo 3 fallos consecutivos antes de abrir el circuito.
-    * 5 segundos de bloqueo antes de intentar reconexión (estado *Half-Open*).
-    * Registro de logs con tiempos de respuesta y estado del circuito.
-2.  **Login:** Gestiona la autenticación de usuarios consultando la base de datos dedicada `login_db`.
-3.  **Tiendas:** Gestiona los establecimientos y sus catálogos en la base de datos `tiendas_db`.
-4.  **Pedidos:** Administra el histórico de compras del sistema mediante `pedidos_db`.
-5.  **GPS:** Simula el seguimiento de ubicación en tiempo real de repartidores en `gps_db`. Adicionalmente, sirve un frontend estático de radar en el puerto `5173` (usando `concurrently` + `serve`).
-
-### Laboratorios y Componentes de Resiliencia (Corte 3 - Python / Flask)
-6.  **Corte 3 Gateway:** Gateway independiente enfocado en la gestión manual de estados del Circuit Breaker para los servicios de mascotas y usuarios. Mantiene un estado global en memoria de fallos y marcas de tiempo.
-7.  **Corte 3 Backend:** Servicio de gestión de mascotas conectado a MySQL. Implementa un retraso artificial (`time.sleep(3)`) para inyectar latencia y forzar la activación del Circuit Breaker en las pruebas.
-8.  **Laboratorio Monitoreo Gateway:** Centralizador de monitoreo para servicios simulados (pedidos, inventario, pagos). Su endpoint de salud consulta los servicios en paralelo y genera reportes de disponibilidad.
-9.  **Laboratorio Pedidos / Inventario / Pagos (Mocks):** Servicios ligeros de simulación de stock y procesamiento que exponen endpoints `/health` para validar el comportamiento del monitoreo bajo estrés y latencia controlada.
-
----
-
-## 🔌 Endpoints Principales
-
-### Gateway & Monitoreo
-* `GET /resumen` (Gateway Corte 3): Combina datos de múltiples servicios con manejo de errores parcial (**HTTP 206 Partial Content**).
-* `GET /estado` (Gateway Monitoreo): Consulta el estado de salud, código HTTP, tiempo de respuesta y número de caídas de los servicios mock.
-
-### Microservicios del Sistema
-* `POST /api/login`: Verifica credenciales de usuario.
-* `GET /api/data` (Tiendas): Lista las tiendas disponibles.
-* `GET /api/productos/:id`: Obtiene productos de una tienda específica.
-* `POST /api/insert`: Registra una nueva tienda en el sistema.
-* `GET /api/data` (Pedidos): Lista todos los pedidos del sistema.
-* `GET /mascotas`: Obtiene el listado de mascotas (Simula latencia de 3 segundos).
+* Gateway principal expuesto en el puerto `3005`
+* Comunicación interna síncrona mediante HTTP y Axios
+* Implementación manual de Circuit Breaker
+* Cada servicio posee su propia base de datos MySQL independiente
+* Todos los contenedores comparten una red Docker privada
 
 ---
 
-## 💻 Instrucciones de Ejecución
+# 3. Tecnologías Utilizadas
 
-Siga estos pasos para desplegar el entorno completo utilizando contenedores Docker:
+| Tecnología     | Versión   | Propósito            |
+| -------------- | --------- | -------------------- |
+| Node.js        | 18        | Runtime              |
+| Express.js     | 4.x / 5.x | API REST             |
+| MySQL          | 8.0       | Bases de datos       |
+| mysql2         | -         | Driver MySQL         |
+| axios          | ^1.6.0    | Comunicación HTTP    |
+| Docker         | -         | Contenerización      |
+| docker-compose | -         | Orquestación         |
+| concurrently   | ^8.2.2    | Ejecución simultánea |
+| serve          | ^14.2.3   | Frontend estático    |
+| cors           | -         | Manejo de CORS       |
+| dotenv         | -         | Variables de entorno |
 
-### 1. Clonar el repositorio
-Asegúrese de clonar el repositorio para conservar el historial y estructura de Git:
-```bash
-git clone <URL_DE_TU_REPOSITORIO>
-cd laboratorio_circuit_breaker
+---
+
+# 4. Endpoints
+
+## Gateway (`localhost:3005`)
+
+| Método | Ruta                     | Descripción               |
+| ------ | ------------------------ | ------------------------- |
+| POST   | `/gateway/login`         | Autenticación de usuarios |
+| GET    | `/gateway/tiendas`       | Lista todas las tiendas   |
+| GET    | `/gateway/pedidos`       | Lista todos los pedidos   |
+| GET    | `/gateway/gps`           | Obtiene datos GPS         |
+| GET    | `/gateway/productos/:id` | Productos por tienda      |
+| GET    | `/health`                | Health check del gateway  |
+
+---
+
+## Login (`login:3000`)
+
+| Método | Ruta         | Descripción                |
+| ------ | ------------ | -------------------------- |
+| POST   | `/api/login` | Validación de credenciales |
+| GET    | `/health`    | Health check               |
+
+---
+
+## Tiendas (`tiendas:3000`)
+
+| Método | Ruta                 | Descripción          |
+| ------ | -------------------- | -------------------- |
+| GET    | `/api/data`          | Lista tiendas        |
+| GET    | `/api/productos/:id` | Productos por tienda |
+| POST   | `/api/insert`        | Crear tienda         |
+| GET    | `/health`            | Health check         |
+
+---
+
+## Pedidos (`pedidos:3000`)
+
+| Método | Ruta        | Descripción   |
+| ------ | ----------- | ------------- |
+| GET    | `/api/data` | Lista pedidos |
+| GET    | `/health`   | Health check  |
+
+---
+
+## GPS (`gps:3000`)
+
+| Método | Ruta        | Descripción           |
+| ------ | ----------- | --------------------- |
+| GET    | `/api/data` | Lista ubicaciones GPS |
+| GET    | `/health`   | Health check          |
+
+---
+
+# 5. Instrucciones de Ejecución
+
+## Opción 1 — Docker (Recomendada)
+
+```bash id="1vjlwm"
+docker-compose up --build
+```
+
+Esto levanta automáticamente:
+
+* 5 microservicios
+* 4 bases de datos MySQL
+* Red Docker compartida
+
+El gateway queda disponible en:
+
+```txt id="cljiv0"
+http://localhost:3005
+```
+
+---
+
+## Opción 2 — Ejecución Manual
+
+### 1. Iniciar Gateway
+
+```bash id="zcq27g"
+cd principal
+npm install
+node backend/index.js
+```
+
+### 2. Iniciar microservicios
+
+```bash id="2johjw"
+cd ../login && npm install && node backend/index.js
+cd ../tiendas && npm install && node backend/index.js
+cd ../pedidos && npm install && node backend/index.js
+cd ../gps && npm install && node backend/index.js
+```
+
+---
+
+## Requisitos Previos
+
+* Tener MySQL ejecutándose localmente
+* Crear las siguientes bases de datos:
+
+  * `login_db`
+  * `tiendas_db`
+  * `pedidos_db`
+  * `gps_db`
+
+O utilizar Docker directamente.
+
+---
+
+# 6. Explicación de Servicios
+
+## principal (API Gateway)
+
+Servicio encargado de centralizar y orquestar todas las peticiones entrantes del frontend.
+
+### Funcionalidades
+
+* Punto único de entrada
+* Redirección de peticiones
+* Exposición de frontend SPA
+* Monitoreo básico
+* Implementación de Circuit Breaker
+
+### Circuit Breaker
+
+El gateway implementa un mecanismo manual de tolerancia a fallos:
+
+* Máximo de 3 fallos consecutivos
+* Apertura del circuito
+* Bloqueo de peticiones durante 5 segundos
+* Estado Half-Open para reintentos
+
+Esto evita sobrecarga y fallos en cascada cuando un servicio deja de responder.
+
+---
+
+## login (Autenticación)
+
+Microservicio encargado de validar credenciales de usuario.
+
+### Base de datos
+
+* `login_db`
+
+### Consulta principal
+
+```sql id="nkn0bi"
+SELECT * FROM usuarios WHERE usuario=? AND password=?
+```
+
+### Funcionalidad
+
+* Validación de usuario y contraseña
+* Retorno de autenticación exitosa o fallida
+
+---
+
+## tiendas (Catálogo)
+
+Microservicio encargado de la gestión de tiendas y productos.
+
+### Base de datos
+
+* `tiendas_db`
+
+### Funcionalidades
+
+* Listar tiendas
+* Consultar productos
+* Crear nuevas tiendas
+
+### Endpoints principales
+
+* `/api/data`
+* `/api/productos/:id`
+* `/api/insert`
+
+---
+
+## pedidos (Órdenes)
+
+Microservicio encargado de la gestión de pedidos.
+
+### Base de datos
+
+* `pedidos_db`
+
+### Funcionalidades
+
+* Consulta de órdenes
+* Retorno de pedidos registrados
+
+### Información manejada
+
+* Cliente
+* Producto
+* Estado del pedido
+
+---
+
+## gps (Geolocalización)
+
+Microservicio encargado del seguimiento de repartidores.
+
+### Base de datos
+
+* `gps_db`
+
+### Funcionalidades
+
+* Ubicaciones GPS
+* Coordenadas en tiempo real
+* Radar animado en frontend
+
+---
+
+# 7. Bases de Datos
+
+Cada microservicio posee una base de datos independiente siguiendo el patrón:
+
+## Database per Service
+
+Esto permite:
+
+* Bajo acoplamiento
+* Independencia entre servicios
+* Escalabilidad
+* Mayor tolerancia a fallos
+
+## Bases de datos utilizadas
+
+* `login_db`
+* `tiendas_db`
+* `pedidos_db`
+* `gps_db`
+
+## Características
+
+* MySQL 8.0
+* Instancias aisladas
+* Conexión automática con reintentos cada 3 segundos
+* Persistencia independiente por servicio
