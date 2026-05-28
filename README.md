@@ -102,4 +102,73 @@ primero se perderia la confianza de los clientes.
 
 En el sistema podras registrarte tato como vendedor como comprados, ademas de esto tendra un usuario administrador, supervisor y otro de soporte. 
 
+Respuesta de ejemplo:
+```json
+{
+  "gateway": "ok",
+  "timestamp": "2026-05-28T15:52:13.935Z",
+  "servicios": {
+    "login": {
+      "estado": "ok",
+      "tiempo_respuesta_ms": 20,
+      "circuito": "cerrado",
+      "fallos": 0,
+      "tiempo_caido_ms": 0
+    },
+    "tiendas": {
+      "estado": "ok",
+      "tiempo_respuesta_ms": 12,
+      "circuito": "cerrado",
+      "fallos": 0,
+      "tiempo_caido_ms": 0
+    },
+    "pedidos": {
+      "estado": "ok",
+      "tiempo_respuesta_ms": 11,
+      "circuito": "cerrado",
+      "fallos": 0,
+      "tiempo_caido_ms": 0
+    },
+    "gps": {
+      "estado": "ok",
+      "tiempo_respuesta_ms": 11,
+      "circuito": "cerrado",
+      "fallos": 0,
+      "tiempo_caido_ms": 0
+    }
+  }
+}
+```
 
+## Circuit Breaker
+
+Para evitar que un servicio caído afecte a los demás, se implementó un Circuit Breaker 
+en el Gateway con las siguientes reglas:
+
+- Si un servicio falla 3 veces seguidas, el circuito se abre y deja de enviarle peticiones
+- Después de 5 segundos, intenta reconectarse automáticamente
+- Si responde bien, el circuito se cierra y vuelve a la normalidad
+
+---
+
+## Base de datos
+
+Se manejan las siguientes tablas: usuarios, productos, tiendas, pagos y pedidos.
+Los datos personales son considerados críticos y deben estar protegidos en todo momento.
+
+---
+
+## Roles del sistema
+
+El sistema maneja los siguientes tipos de usuario:
+
+- Comprador
+- Vendedor  
+- Soporte
+
+---
+
+## Escalabilidad
+
+Ya que al ser construido en una arquitectura distribuida el sistema puede escalar por servicio de
+manera individual sin afectar el funcionamiento global, ayudando a actualizaciones futuras con menor impacto
